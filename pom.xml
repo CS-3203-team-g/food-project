@@ -51,6 +51,13 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.0.7</version> <!-- Use the latest stable version -->
+        </dependency>
+
     </dependencies>
 
     <build>
