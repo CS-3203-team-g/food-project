@@ -1,5 +1,7 @@
 package pro.pantrypilot.db.classes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.sql.Timestamp;
 
@@ -34,6 +36,22 @@ public class User {
         this.lastLogin = lastLogin;
         this.isActive = isActive;
     }
+
+    public User(ResultSet resultSet) {
+        try {
+            this.userID = resultSet.getString("userID");
+            this.username = resultSet.getString("username");
+            this.email = resultSet.getString("email");
+            this.passwordHash = resultSet.getString("passwordHash");
+            this.createdAt = resultSet.getTimestamp("createdAt");
+            this.lastLogin = resultSet.getTimestamp("lastLogin");
+            this.isActive = resultSet.getBoolean("isActive");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error constructing User from ResultSet", e);
+        }
+    }
+
 
     // Getters and Setters
     public String getUserID() {
