@@ -16,7 +16,7 @@ public class Index implements HttpHandler {
         try{
 //            String content = new String(Files.readAllBytes(Paths.get("/home/jlw1808/crtapi/src/main/java/index.html")));
 //            sb.append(content);
-            sb.append("Gooners Unite!");
+            sb.append("<h1>GOON SQUAD</h1>");
         }
         catch (Exception e){
             e.printStackTrace();
