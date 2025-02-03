@@ -13,6 +13,7 @@ public class UsersDatabase {
                 + "    username VARCHAR(50) NOT NULL UNIQUE,\n"          // Unique usernames
                 + "    email VARCHAR(100) NOT NULL UNIQUE,\n"            // Unique emails
                 + "    passwordHash VARCHAR(255) NOT NULL,\n"            // Hashed password
+                + "    salt VARCHAR(255) NOT NULL UNIQUE,\n"                    // Salt for password hashing
                 + "    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" // Auto timestamp
                 + "    lastLogin TIMESTAMP NULL DEFAULT NULL,\n"         // Nullable, updated on login
                 + "    isActive BOOLEAN DEFAULT TRUE\n"                  // Active status flag
@@ -27,10 +28,11 @@ public class UsersDatabase {
     }
 
     public static boolean createUser(User user) {
-        String createUserSQL = "INSERT INTO users (username, email, passwordHash) VALUES ('"
+        String createUserSQL = "INSERT INTO users (username, email, passwordHash, salt) VALUES ('"
                 + user.getUsername() + "', '"
                 + user.getEmail() + "', '"
-                + user.getPasswordHash() + "');";
+                + user.getPasswordHash() + "', '"
+                + user.getSalt() + "');";
         try {
             int rowsAffected = DatabaseConnectionManager.getConnection()
                     .createStatement()
