@@ -11,6 +11,9 @@ public class Main {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(34197), 0);
 
+        server.createContext("/", new pro.pantrypilot.endpoints.pages.Index());
+
+        server.start();
     }
 
 }
