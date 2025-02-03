@@ -26,15 +26,22 @@ public class UsersDatabase {
 
     }
 
-    public static void createUser(User user) {
-        String createUserSQL = "INSERT INTO users (username, email, passwordHash) VALUES ('" + user.getUsername() + "', '" + user.getEmail() + "', '" + user.getPasswordHash() + "');";
+    public static boolean createUser(User user) {
+        String createUserSQL = "INSERT INTO users (username, email, passwordHash) VALUES ('"
+                + user.getUsername() + "', '"
+                + user.getEmail() + "', '"
+                + user.getPasswordHash() + "');";
         try {
-            DatabaseConnectionManager.getConnection().createStatement().execute(createUserSQL);
+            int rowsAffected = DatabaseConnectionManager.getConnection()
+                    .createStatement()
+                    .executeUpdate(createUserSQL);
+            return rowsAffected > 0; // Returns true if a row was inserted
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            return false; // Returns false if an exception occurred
         }
     }
+
 
     public static User getUser(String username) {
         String getUserSQL = "SELECT * FROM users WHERE username = '" + username + "';";
