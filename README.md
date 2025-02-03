@@ -1,7 +1,7 @@
 
 # Pantry Pilot
 
-A web-based application that generates grocery plans and reccommends recipes based on ingredients you have on hand. This project is built in Java using Maven for dependency management and testing.
+A web-based application that generates grocery plans and recommends recipes based on ingredients you have on hand. This project is built in Java using Maven for dependency management and testing.
 
 ---
 
@@ -19,14 +19,14 @@ A web-based application that generates grocery plans and reccommends recipes bas
 
 ## Overview
 
-The **Pantry Pilot** automatically creates grocery lists based on user preferences to help simplify the grocery shopping process. The application runs a web server on **port 34197**, making it accessible at [http://localhost:34197](http://localhost:34197). The project emphasizes high code quality by enforcing at least **80% code coverage** through comprehensive unit testing with Maven.
+The **Pantry Pilot** automatically creates grocery lists based on user preferences to help simplify the grocery shopping process. The application runs a web server on **port 34197**, making it accessible at [http://localhost:34197](http://localhost:34197). The project emphasizes high code quality by enforcing at least **80% code coverage** through comprehensive unit testing with Maven
 
 ---
 
 ## Features
 
 - **Automatic Grocery List Generator** Get automatically generated grocery lists tailored towards your daily needs and preferences
-- **Targeted Recipe Reccomendations** Recieve customized recipe reccomendations based on leftover ingredients and favorites
+- **Targeted Recipe Recommendations** Recieve customized recipe recommendations based on leftover ingredients and favorites
 
 ---
 
@@ -36,13 +36,13 @@ The **Pantry Pilot** automatically creates grocery lists based on user preferenc
 
 ### Prerequisites
 
-- **Java JDK:** Ensure you have Java installed.
-- **Maven:** Make sure Maven is installed and configured.
-- **Git:** To clone the repository.
+- **Java JDK:** Ensure you have Java installed
+- **Maven:** Make sure Maven is installed and configured
+- **Git:** To clone the repository
 
 ### Getting Started
 
-PantryPilot is launching as a website, so no installation is needed
+PantryPilot is launching as a website, so no installation is necessary 
 
 - Launch PantryPilot.ai to create an account or login
 
@@ -55,7 +55,7 @@ PantryPilot is launching as a website, so no installation is needed
 
 - Access generated grocery lists to remove any unwanted items or add missing groceries
 
-- Browse personalized recipe reccomendations based on grocery lists and inputted leftover ingredients
+- Browse personalized recipe recommendations based on grocery lists and inputted leftover ingredients
 
 1.  **Access Custom Grocery Lists**
     
@@ -81,7 +81,7 @@ PantryPilot is launching as a website, so no installation is needed
 
 PantryPilot does not collect, store, or share personal user data. This includes:
 
-- Any data entered, like ingredients, recipes, or user preferences.
+- Any data entered, like ingredients, recipes, or user preferences
 - All data is processed through external APIs without being stored
 
 **Data Usage**
@@ -98,15 +98,15 @@ PantryPilot does not collect, store, or share personal user data. This includes:
 
 To contribute:
 
-1.  **Fork the Repository:** Create your own fork.
-2.  **Create a Feature Branch:** Branch off from `main` for your changes.
-3.  **Adhere to Testing Standards:** Make sure your changes include tests that maintain at least 80% code coverage.
-4.  **Submit a Pull Request:** Once your feature or fix is ready, submit a pull request for review.
+1.  **Fork the Repository:** Create your own fork
+2.  **Create a Feature Branch:** Branch off from `main` for your changes
+3.  **Adhere to Testing Standards:** Make sure your changes include tests that maintain at least 80% code coverage
+4.  **Submit a Pull Request:** Once your feature or fix is ready, submit a pull request for review
 
 ----------
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License
 
 ----------
