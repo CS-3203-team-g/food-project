@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Arrays;
 
 public class PasswordHasher {
 
@@ -50,6 +51,26 @@ public class PasswordHasher {
 
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error generating password hash", e);
+        }
+    }
+
+    public static boolean verifyPassword(String plaintextPassword, String salt, String storedHash) {
+        try {
+            // Decode the provided salt
+            byte[] saltBytes = Base64.getDecoder().decode(salt);
+
+            // Hash the provided password with the provided salt
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(saltBytes);
+            byte[] hashedPasswordBytes = md.digest(plaintextPassword.getBytes());
+
+            String computedHash = Base64.getEncoder().encodeToString(hashedPasswordBytes);
+
+            // Compare the computed hash with the stored hash
+            return computedHash.equals(storedHash);
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error verifying password", e);
         }
     }
 }
