@@ -1,9 +1,16 @@
 package pro.pantrypilot;
 
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
 public class Main {
 
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
+    public static void main(String[] args) throws IOException {
+
+        HttpServer server = HttpServer.create(new InetSocketAddress(34197), 0);
+
     }
 
 }
