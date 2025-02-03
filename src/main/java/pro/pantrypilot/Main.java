@@ -15,6 +15,7 @@ public class Main {
         HttpServer server = HttpServer.create(new InetSocketAddress(ConfigurationManager.getIntProperty("server.port")), 0);
 
         server.createContext("/", new pro.pantrypilot.endpoints.pages.Index());
+        server.createContext("/login", new pro.pantrypilot.endpoints.pages.login.Login());
 
         server.start();
     }
