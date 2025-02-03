@@ -25,6 +25,7 @@ public class Main {
 
 //        API endpoints
         server.createContext("/api/createUser", new pro.pantrypilot.endpoints.api.signup.CreateUser());
+        server.createContext("/api/login", new pro.pantrypilot.endpoints.api.login.Login());
 
         server.start();
     }
