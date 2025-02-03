@@ -1,7 +1,7 @@
 
 # Food/Recipe Recommender
 
-A web-based application that suggests recipes based on the ingredients you have on hand. This project is built in Java using Maven for dependency management and testing.
+A web-based application that generates grocery plans and reccommends recipes based on ingredients you have on hand. This project is built in Java using Maven for dependency management and testing.
 
 ---
 
