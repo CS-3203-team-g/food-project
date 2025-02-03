@@ -2,7 +2,9 @@ package pro.pantrypilot.db.classes;
 
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class UsersDatabase {
 
@@ -47,12 +49,19 @@ public class UsersDatabase {
 
     public static User getUser(String username) {
         String getUserSQL = "SELECT * FROM users WHERE username = '" + username + "';";
-        try {
-            return new User(DatabaseConnectionManager.getConnection().createStatement().executeQuery(getUserSQL));
+        try (Statement statement = DatabaseConnectionManager.getConnection().createStatement();
+             ResultSet resultSet = statement.executeQuery(getUserSQL)) {
+
+            if (resultSet.next()) {  // Move cursor to the first row
+                return new User(resultSet);
+            } else {
+                return null; // No user found with the given username
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
+
 
 }
