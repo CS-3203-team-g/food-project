@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(34197), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(25565), 0);
 
         server.createContext("/", new pro.pantrypilot.endpoints.pages.Index());
 
