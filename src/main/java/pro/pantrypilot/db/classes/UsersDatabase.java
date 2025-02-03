@@ -26,4 +26,24 @@ public class UsersDatabase {
 
     }
 
+    public static void createUser(User user) {
+        String createUserSQL = "INSERT INTO users (username, email, passwordHash) VALUES ('" + user.getUsername() + "', '" + user.getEmail() + "', '" + user.getPasswordHash() + "');";
+        try {
+            DatabaseConnectionManager.getConnection().createStatement().execute(createUserSQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static User getUser(String username) {
+        String getUserSQL = "SELECT * FROM users WHERE username = '" + username + "';";
+        try {
+            return new User(DatabaseConnectionManager.getConnection().createStatement().executeQuery(getUserSQL));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
 }
