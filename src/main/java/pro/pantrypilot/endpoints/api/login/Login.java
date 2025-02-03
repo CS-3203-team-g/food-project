@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import pro.pantrypilot.db.classes.User;
-import pro.pantrypilot.db.classes.UsersDatabase;
+import pro.pantrypilot.db.classes.session.Session;
+import pro.pantrypilot.db.classes.session.SessionsDatabase;
+import pro.pantrypilot.db.classes.user.User;
+import pro.pantrypilot.db.classes.user.UsersDatabase;
 import pro.pantrypilot.helpers.PasswordHasher;
 
 import java.io.*;
@@ -58,8 +60,18 @@ public class Login implements HttpHandler {
             return;
         }
 
+        Session session = new Session(user.getUserID(), exchange.getRemoteAddress().getAddress().getHostAddress());
+        session = SessionsDatabase.createSession(session);
+
+//        System.out.println("S ID:" + session.getSessionID());
+
+        if(session == null || session.getSessionID() == null) {
+            sendResponse(exchange, 500, "{\"message\": \"Internal server error, null session ID\"}");
+            return;
+        }
+
         // Login successful
-        sendResponse(exchange, 200, "{\"message\": \"Login successful\"}");
+        sendResponse(exchange, 200, "{\"message\": \"Login successful\",\"sessionID\": \"" + session.getSessionID() + "\"}");
     }
 
 

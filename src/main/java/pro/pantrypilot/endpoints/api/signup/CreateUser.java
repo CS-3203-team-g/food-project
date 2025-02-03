@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import pro.pantrypilot.db.classes.User;
-import pro.pantrypilot.db.classes.UsersDatabase;
+import pro.pantrypilot.db.classes.user.User;
+import pro.pantrypilot.db.classes.user.UsersDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;

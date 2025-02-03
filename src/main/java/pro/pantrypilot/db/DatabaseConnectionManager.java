@@ -1,7 +1,8 @@
 package pro.pantrypilot.db;
 
 import pro.pantrypilot.config.ConfigurationManager;
-import pro.pantrypilot.db.classes.UsersDatabase;
+import pro.pantrypilot.db.classes.session.SessionsDatabase;
+import pro.pantrypilot.db.classes.user.UsersDatabase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -39,6 +40,7 @@ public class DatabaseConnectionManager {
     public static void initializeDatabase() {
 
         UsersDatabase.initializeUserDatabase();
+        SessionsDatabase.initializeSessionsDatabase();
 
     }
 }

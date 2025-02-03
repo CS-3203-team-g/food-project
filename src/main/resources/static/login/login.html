@@ -130,13 +130,15 @@
 
             // Check if the login was successful
             if (!response.ok) {
-                // Extract error message if available
                 const errorData = await response.json();
                 alert(`Error: ${errorData.message || 'Unable to login.'}`);
             } else {
                 const result = await response.json();
-                alert("Login successful!");
-                // Redirect the user to the homepage or dashboard
+
+                // Save sessionID and username to cookies
+                document.cookie = `sessionID=${result.sessionID}; path=/; secure; SameSite=Strict`;
+                document.cookie = `username=${username}; path=/; secure; SameSite=Strict`;
+
                 window.location.href = "/";
             }
         } catch (error) {
