@@ -18,7 +18,14 @@ public class Main {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(ConfigurationManager.getIntProperty("server.port")), 0);
 
+//        static webpages
         server.createContext("/", new pro.pantrypilot.endpoints.pages.Index());
+        server.createContext("/login", new pro.pantrypilot.endpoints.pages.login.Login());
+        server.createContext("/signup", new pro.pantrypilot.endpoints.pages.signup.SignUp());
+
+//        API endpoints
+        server.createContext("/api/createUser", new pro.pantrypilot.endpoints.api.signup.CreateUser());
+        server.createContext("/api/login", new pro.pantrypilot.endpoints.api.login.Login());
 
         server.start();
     }
