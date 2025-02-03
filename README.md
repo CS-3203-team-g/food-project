@@ -1,4 +1,3 @@
-
 # Pantry Pilot
 
 A web-based application that generates grocery plans and recommends recipes based on ingredients you have on hand. This project is built in Java using Maven for dependency management and testing.
