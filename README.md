@@ -10,12 +10,10 @@ A web-based application that generates grocery plans and reccommends recipes bas
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Testing](#testing)
-- [Deployment and Branching Strategy](#deployment-and-branching-strategy)
+- [Getting Started](*getting-started)
+- [Usage and Contribution](#usage-and-contribution)
 - [Contributing](#contributing)
 - [License](#license)
-- [References](#references)
 
 ---
 
@@ -61,19 +59,19 @@ PantryPilot is launching as a website, so no installation is needed
 
 1.  **Access Custom Grocery Lists**
     
-    After inputting grocery needs, access and edit previously created grocery lists to make any changes
+    - After inputting grocery needs, access and edit previously created grocery lists to make any changes
     
 2.  **Input Leftover Ingredients**
     
-    Enter any ingredients you have on hand into the Recipe Manager 
+    - Enter any ingredients you have on hand into the Recipe Manager 
     
 3.  **Get Recipe Recommendations:**
     
-    -   Click the **"Get Recipes"** button on the Recipe Manager
+    - Click the **"Get Recipes"** button on the Recipe Manager
 
 4. **Share Personalized Recipes**
    
-   -    Browse, select, and share any generated recipes
+   - Browse, select, and share any generated recipes
 
 ----------
 
