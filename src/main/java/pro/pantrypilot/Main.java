@@ -16,6 +16,7 @@ public class Main {
 
         server.createContext("/", new pro.pantrypilot.endpoints.pages.Index());
         server.createContext("/login", new pro.pantrypilot.endpoints.pages.login.Login());
+        server.createContext("/signup", new pro.pantrypilot.endpoints.pages.signup.SignUp());
 
         server.start();
     }
