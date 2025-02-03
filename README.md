@@ -1,5 +1,5 @@
 
-# Food/Recipe Recommender
+# Pantry Pilot
 
 A web-based application that generates grocery plans and reccommends recipes based on ingredients you have on hand. This project is built in Java using Maven for dependency management and testing.
 
@@ -21,21 +21,20 @@ A web-based application that generates grocery plans and reccommends recipes bas
 
 ## Overview
 
-The **Food/Recipe Recommender** helps users discover recipes tailored to the ingredients they currently possess. The application runs a web server on **port 34197**, making it accessible at [http://localhost:34197](http://localhost:34197). The project emphasizes high code quality by enforcing at least **80% code coverage** through comprehensive unit testing with Maven.
+The **Pantry Pilot** automatically creates grocery lists based on user preferences to help simplify the grocery shopping process. The application runs a web server on **port 34197**, making it accessible at [http://localhost:34197](http://localhost:34197). The project emphasizes high code quality by enforcing at least **80% code coverage** through comprehensive unit testing with Maven.
 
 ---
 
 ## Features
 
-- **Ingredient-Based Recommendations:** Enter available ingredients to receive a curated list of recipes.
-- **User-Friendly Interface:** Simple and intuitive design for quick recipe lookup.
-- **Robust Testing:** Utilizes Maven for unit testing with a minimum requirement of 80% code coverage.
-- **Automated Deployment:** Commits to the main branch are auto-deployed to production.
-- **Strict Branch Policy:** Only approved commits are allowed on the main branch to maintain production stability.
+- **Automatic Grocery List Generator** Get automatically generated grocery lists tailored towards your daily needs and preferences
+- **Targeted Recipe Reccomendations** Recieve customized recipe reccomendations based on leftover ingredients and favorites
 
 ---
 
 ## Installation
+
+- **Use Google Chrome, Firefox, Safari, or Microsoft Edge for best experience**
 
 ### Prerequisites
 
@@ -43,115 +42,73 @@ The **Food/Recipe Recommender** helps users discover recipes tailored to the ing
 - **Maven:** Make sure Maven is installed and configured.
 - **Git:** To clone the repository.
 
-### Steps
+### Getting Started
 
-1. **Clone the Repository:**
+PantryPilot is launching as a website, so no installation is needed
 
-   `'bash
-   git clone https://your-repository-url.git
-   cd food-recipe-recommender
-``
+- Launch PantryPilot.ai to create an account or login
 
+- Use the quick start tool to start inputting your grocery needs and preferences, weekly budget, and any leftover ingredients for recipe reccommendation
 
-2.  **Open in Your Preferred Java IDE:**
-    
-    Open the project in your favorite Java IDE (e.g., IntelliJ IDEA, Eclipse, or NetBeans).
-    
-3.  **Build the Project with Maven:**
-    
-    Run the following command to compile the project and run unit tests:
-    
-    ```bash
-    mvn clean install
-    
-    ```
-    
 
 ----------
 
-## Usage
+## Usage and Configuration
 
-1.  **Start the Server:**
+- Access generated grocery lists to remove any unwanted items or add missing groceries
+
+- Browse personalized recipe reccomendations based on grocery lists and inputted leftover ingredients
+
+1.  **Access Custom Grocery Lists**
     
-    After a successful build, start the application server:
+    After inputting grocery needs, access and edit previously created grocery lists to make any changes
     
-    ```bash
-    mvn exec:java -Dexec.mainClass="com.yourdomain.Main"
+2.  **Input Leftover Ingredients**
     
-    ```
-    
-2.  **Access the Application:**
-    
-    Open your web browser and navigate to:
-    
-    ```
-    http://localhost:34197
-    
-    ```
+    Enter any ingredients you have on hand into the Recipe Manager 
     
 3.  **Get Recipe Recommendations:**
     
-    -   Enter the list of ingredients you have.
-    -   Click the **"Get Recipes"** button.
-    -   View the recommended recipes that you can make with the entered ingredients.
+    -   Click the **"Get Recipes"** button on the Recipe Manager
+
+4. **Share Personalized Recipes**
+   
+   -    Browse, select, and share any generated recipes
 
 ----------
 
-## Testing
+## Privacy and Security
 
-This project uses Maven for running unit tests and ensuring code quality. Our goal is to maintain **at least 80% code coverage**.
+**Data Collection**
 
--   **Run Tests:**
-    
-    ```bash
-    mvn test
-    
-    ```
-    
--   **Coverage Reporting:**
-    
-    You can generate code coverage reports using Maven plugins such as [JaCoCo](https://www.jacoco.org/).
-    
+PantryPilot does not collect, store, or share personal user data. This includes:
 
-----------
+- Any data entered, like ingredients, recipes, or user preferences.
+- All data is processed through external APIs without being stored
 
-## Deployment and Branching Strategy
+**Data Usage**
 
--   **Main Branch:**
-    
-    -   The `main` branch contains production-ready code.
-    -   **Auto Deployment:** Any commit merged into `main` is automatically deployed to the production environment (the live environment accessible to the public).
-    -   **Approval Process:** All commits to `main` must be approved by an authorized approver through a pull request review process.
--   **Development Workflow:**
-    
-    -   **Feature Branches:** Create a new branch from `main` for any new feature or bug fix.
-    -   **Pull Requests:** Once your changes are complete and tested, submit a pull request for review.
-    -   **Approval:** Ensure your pull request is approved before merging into `main` to maintain code integrity.
+- Any user input is used solely to generate grocery lists and recipe reccomendations
+- No personal data is shared, sold, or used for advertising purposes
 
-----------
+**User Control**
+
+- Users have full control over their inputted and stored data
+- At any point, users may clear their cache to remove any locally stored data
 
 ## Contributing
 
-We welcome contributions to improve the Food/Recipe Recommender! To contribute:
+To contribute:
 
 1.  **Fork the Repository:** Create your own fork.
 2.  **Create a Feature Branch:** Branch off from `main` for your changes.
 3.  **Adhere to Testing Standards:** Make sure your changes include tests that maintain at least 80% code coverage.
 4.  **Submit a Pull Request:** Once your feature or fix is ready, submit a pull request for review.
-5.  **Approval Required:** Remember that all commits to the main branch require an approver’s consent before merging.
-
-For more details on how to contribute, please refer to our CONTRIBUTING.md.
 
 ----------
 
 ## License
 
 This project is licensed under the MIT License.
-
-----------
-
-## References
-
-For a comprehensive guide on creating effective README files, please see the advice provided in [Readme.md - The Ultimate Guide](https://tiloid.com/p/readme-md-the-ultimate-guide).
 
 ----------
