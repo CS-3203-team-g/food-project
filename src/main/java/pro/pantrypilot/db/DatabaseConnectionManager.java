@@ -1,7 +1,7 @@
 package pro.pantrypilot.db;
 
 import pro.pantrypilot.config.ConfigurationManager;
-import pro.pantrypilot.db.classes.UsersDatabase;
+import pro.pantrypilot.db.classes.user.UsersDatabase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

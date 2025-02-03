@@ -1,4 +1,4 @@
-package pro.pantrypilot.db.classes;
+package pro.pantrypilot.db.classes.user;
 
 import pro.pantrypilot.helpers.PasswordHasher;
 
