@@ -1,5 +1,7 @@
 package pro.pantrypilot.db.classes;
 
+import pro.pantrypilot.helpers.PasswordHasher;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -10,16 +12,21 @@ public class User {
     private String username;
     private String email;
     private String passwordHash;
+    private String salt;
     private Timestamp createdAt;
     private Timestamp lastLogin;
     private boolean isActive;
 
     // Constructor for new users (auto-generates userID)
-    public User(String username, String email, String passwordHash) {
+    public User(String username, String email, String plaintextPassword) {
         this.userID = UUID.randomUUID().toString(); // Auto-generate UUID in Java
         this.username = username;
         this.email = email;
-        this.passwordHash = passwordHash;
+
+        PasswordHasher.Password password = PasswordHasher.generatePassword(username, plaintextPassword);
+        this.passwordHash = password.getHash();
+        this.salt = password.getSalt();
+
         this.isActive = true; // Default value
         this.createdAt = new Timestamp(System.currentTimeMillis()); // Set current timestamp
         this.lastLogin = null; // Not logged in yet
@@ -43,6 +50,7 @@ public class User {
             this.username = resultSet.getString("username");
             this.email = resultSet.getString("email");
             this.passwordHash = resultSet.getString("passwordHash");
+            this.salt = resultSet.getString("salt");
             this.createdAt = resultSet.getTimestamp("createdAt");
             this.lastLogin = resultSet.getTimestamp("lastLogin");
             this.isActive = resultSet.getBoolean("isActive");
@@ -125,5 +133,13 @@ public class User {
                 ", lastLogin=" + lastLogin +
                 ", isActive=" + isActive +
                 '}';
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }
