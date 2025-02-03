@@ -22,18 +22,30 @@ public class ConfigurationManager {
     }
 
     public static String getProperty(String key) {
+        if(properties.isEmpty()) {
+            loadConfig();
+        }
         return properties.getProperty(key);
     }
 
     public static int getIntProperty(String key) {
+        if(properties.isEmpty()) {
+            loadConfig();
+        }
         return Integer.parseInt(properties.getProperty(key));
     }
 
     public static boolean getBooleanProperty(String key) {
+        if(properties.isEmpty()) {
+            loadConfig();
+        }
         return Boolean.parseBoolean(properties.getProperty(key));
     }
 
     public static double getDoubleProperty(String key) {
+        if(properties.isEmpty()) {
+            loadConfig();
+        }
         return Double.parseDouble(properties.getProperty(key));
     }
 }
