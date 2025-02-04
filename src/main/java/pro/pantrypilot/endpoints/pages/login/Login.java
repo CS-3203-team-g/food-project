@@ -2,6 +2,8 @@ package pro.pantrypilot.endpoints.pages.login;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Login implements HttpHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(Login.class);
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -20,7 +24,7 @@ public class Login implements HttpHandler {
             String response = new String(fileBytes, StandardCharsets.UTF_8);
             responseBytes = response.getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading login.html", e);
             responseBytes = "Error: Unable to load login.html".getBytes(StandardCharsets.UTF_8);
         }
 

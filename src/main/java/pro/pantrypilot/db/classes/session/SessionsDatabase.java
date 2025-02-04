@@ -1,5 +1,7 @@
 package pro.pantrypilot.db.classes.session;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
 import java.sql.ResultSet;
@@ -8,6 +10,8 @@ import java.sql.Statement;
 import java.util.UUID;
 
 public class SessionsDatabase {
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionsDatabase.class);
 
     /**
      * Initializes the sessions table in the database.
@@ -32,7 +36,7 @@ public class SessionsDatabase {
             Statement stmt = DatabaseConnectionManager.getConnection().createStatement();
             stmt.execute(createSessionsTableSQL);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error creating sessions table", e);
             throw new RuntimeException(e);
         }
     }
@@ -61,7 +65,7 @@ public class SessionsDatabase {
             }
             return null;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error creating session", e);
             return null;
         }
     }
@@ -83,8 +87,8 @@ public class SessionsDatabase {
                 return null; // No session found with the given sessionID
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            logger.error("Error retrieving session", e);
+            return null;
         }
     }
 
@@ -104,7 +108,7 @@ public class SessionsDatabase {
                     .executeUpdate(updateSQL);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error updating lastUsed timestamp", e);
             return false;
         }
     }
@@ -125,7 +129,7 @@ public class SessionsDatabase {
                     .executeUpdate(deleteSQL);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error deleting session", e);
             return false;
         }
     }
