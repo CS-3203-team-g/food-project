@@ -65,6 +65,12 @@
             <version>3.0.7</version> <!-- Use the latest stable version -->
         </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.11</version>
+        </dependency>
+
     </dependencies>
 
     <build>
