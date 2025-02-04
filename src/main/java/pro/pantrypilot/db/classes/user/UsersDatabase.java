@@ -1,5 +1,7 @@
 package pro.pantrypilot.db.classes.user;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
 import java.sql.ResultSet;
@@ -7,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class UsersDatabase {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsersDatabase.class);
 
     public static void initializeUserDatabase(){
 
@@ -23,7 +27,7 @@ public class UsersDatabase {
         try {
             DatabaseConnectionManager.getConnection().createStatement().execute(createUsersTableSQL);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error creating users table", e);
             throw new RuntimeException(e);
         }
 
@@ -41,7 +45,7 @@ public class UsersDatabase {
                     .executeUpdate(createUserSQL);
             return rowsAffected > 0; // Returns true if a row was inserted
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error creating user", e);
             return false; // Returns false if an exception occurred
         }
     }
@@ -58,8 +62,8 @@ public class UsersDatabase {
                 return null; // No user found with the given username
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            logger.error("Error retrieving user", e);
+            return null;
         }
     }
 
