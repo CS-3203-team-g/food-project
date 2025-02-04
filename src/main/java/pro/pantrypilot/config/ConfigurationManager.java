@@ -1,14 +1,17 @@
 package pro.pantrypilot.config;
 
-import pro.pantrypilot.Main;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class ConfigurationManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationManager.class);
 
     private static Properties properties = new Properties();
 
@@ -17,7 +20,8 @@ public class ConfigurationManager {
             InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/config.properties"));
             properties.load(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error loading config file", e);
+            logger.error(Arrays.toString(e.getStackTrace()));
         }
     }
 
