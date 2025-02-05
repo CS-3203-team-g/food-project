@@ -3,6 +3,7 @@ package pro.pantrypilot.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.pantrypilot.config.ConfigurationManager;
+import pro.pantrypilot.db.classes.ingredients.IngredientsDatabase;
 import pro.pantrypilot.db.classes.session.SessionsDatabase;
 import pro.pantrypilot.db.classes.user.UsersDatabase;
 
@@ -50,6 +51,7 @@ public class DatabaseConnectionManager {
 
         UsersDatabase.initializeUserDatabase();
         SessionsDatabase.initializeSessionsDatabase();
+        IngredientsDatabase.initializeIngredientsDatabase();
 
     }
 }
