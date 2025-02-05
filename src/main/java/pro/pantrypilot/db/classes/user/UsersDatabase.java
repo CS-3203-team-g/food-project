@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -64,6 +65,22 @@ public class UsersDatabase {
         } catch (SQLException e) {
             logger.error("Error retrieving user", e);
             return null;
+        }
+    }
+
+    public static boolean updateUserPassword(String userID, String newPasswordHash, String newSalt) {
+        String updatePasswordSQL = "UPDATE users SET passwordHash = ?, salt = ? WHERE userID = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(updatePasswordSQL)) {
+            preparedStatement.setString(1, newPasswordHash);
+            preparedStatement.setString(2, newSalt);
+            preparedStatement.setString(3, userID);
+    
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0; // Returns true if a row was updated
+        } catch (SQLException e) {
+            logger.error("Error updating password for userID: " + userID, e);
+            return false; // Returns false if an exception occurred
         }
     }
 

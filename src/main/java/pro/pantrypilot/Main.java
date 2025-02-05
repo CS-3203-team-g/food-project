@@ -37,11 +37,14 @@ public class Main {
         server.createContext("/", new pro.pantrypilot.endpoints.pages.Index());
         server.createContext("/login", new pro.pantrypilot.endpoints.pages.login.Login());
         server.createContext("/signup", new pro.pantrypilot.endpoints.pages.signup.SignUp());
+        server.createContext("/settings", new pro.pantrypilot.endpoints.pages.settings.Settings());
 
 //        API endpoints
         logger.info("Creating API Contexts");
         server.createContext("/api/createUser", new pro.pantrypilot.endpoints.api.signup.CreateUser());
         server.createContext("/api/login", new pro.pantrypilot.endpoints.api.login.Login());
+        server.createContext("/api/changePassword", new pro.pantrypilot.endpoints.api.settings.ChangePassword());
+
 
         logger.info("Starting HttpServer");
         server.start();
