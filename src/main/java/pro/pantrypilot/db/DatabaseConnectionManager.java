@@ -3,7 +3,9 @@ package pro.pantrypilot.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.pantrypilot.config.ConfigurationManager;
-import pro.pantrypilot.db.classes.ingredients.IngredientsDatabase;
+import pro.pantrypilot.db.classes.recipe.IngredientsDatabase;
+import pro.pantrypilot.db.classes.recipe.RecipeDatabase;
+import pro.pantrypilot.db.classes.recipe.RecipeIngredientsDatabase;
 import pro.pantrypilot.db.classes.session.SessionsDatabase;
 import pro.pantrypilot.db.classes.user.UsersDatabase;
 
@@ -44,6 +46,14 @@ public class DatabaseConnectionManager {
     }
 
     public static Connection getConnection() {
+        try {
+            if(conn.isClosed() || conn == null) {
+                logger.info("Reconnecting to Database");
+                connectToDatabase();
+            }
+        } catch (SQLException e) {
+            logger.error("Error checking connection", e);
+        }
         return conn;
     }
 
@@ -51,7 +61,10 @@ public class DatabaseConnectionManager {
 
         UsersDatabase.initializeUserDatabase();
         SessionsDatabase.initializeSessionsDatabase();
+        RecipeDatabase.initializeRecipeDatabase();
+        RecipeIngredientsDatabase.initializeRecipeIngredientsDatabase();
         IngredientsDatabase.initializeIngredientsDatabase();
+
 
     }
 }
