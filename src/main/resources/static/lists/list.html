@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>List Details - Pantry Pilot</title>
+    <!-- Bootstrap CSS -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+        .main-content {
+            flex: 1;
+        }
+        .list-img {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">Pantry Pilot</a>
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/recipes">Recipes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/lists">Lists</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+    <section class="py-5">
+        <div class="container">
+            <div id="listDetails" class="row">
+                <!-- List details will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-4">
+    <div class="container text-center">
+        <p class="mb-0">&copy; 2025 Pantry Pilot. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript to fetch and display list details -->
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        function getListID() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        const listID = getListID();
+        if (!listID) {
+            console.error('No list ID found in the URL');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/getShoppingListWithIngredients?id=${listID}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch list details');
+            }
+            const list = await response.json();
+            const listDetails = document.getElementById('listDetails');
+
+            if (list) {
+                listDetails.innerHTML = `
+                <div class="col-12">
+                  <section id="listTitle" class="text-center mb-4">
+                    <h2>${list.name}</h2>
+                  </section>
+                </div>
+                <div class="col-12">
+                  <section id="listIngredients" class="mb-4">
+                    <h4>Ingredients</h4>
+                    <ul>
+                      ${list.shoppingListIngredients.map(ingredient => `
+                        <li>${ingredient.quantity} ${ingredient.unit} ${ingredient.ingredientName}</li>
+                      `).join('')}
+                    </ul>
+                  </section>
+                </div>
+              `;
+            } else {
+                console.error('List details are undefined');
+            }
+        } catch (error) {
+            console.error('Error fetching list details:', error);
+        }
+    });
+</script>
+</body>
+</html>
