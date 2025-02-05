@@ -192,8 +192,6 @@
       // Prepare the payload
       const payload = { currentPassword, newPassword, username, sessionID };
 
-      alert(JSON.stringify(payload))
-
       try {
         // Send the password change request to the backend API
         const response = await fetch('/api/changePassword', {
