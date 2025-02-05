@@ -87,6 +87,16 @@
 <section class="py-5">
     <div class="container">
         <h2 class="mb-4">Your Shopping Lists</h2>
+
+        <!-- Add this button to trigger the creation of a new list -->
+        <button id="createListBtn" class="btn btn-primary mb-4">Create New List</button>
+
+        <!-- Add this form, initially hidden, to input the new list name -->
+        <div id="createListForm" class="mb-4" style="display: none;">
+            <input type="text" id="newListName" class="form-control" placeholder="Enter list name" required />
+            <button id="submitListBtn" class="btn btn-primary mt-2">Submit</button>
+        </div>
+
         <div class="row" id="listGrid">
             <!-- Shopping list cards will be inserted here by JavaScript -->
         </div>
@@ -169,5 +179,42 @@
         }
     });
 </script>
+
+<script>
+    document.getElementById('createListBtn').addEventListener('click', function() {
+        document.getElementById('createListForm').style.display = 'block';
+    });
+
+    document.getElementById('submitListBtn').addEventListener('click', async function() {
+        const listName = document.getElementById('newListName').value.trim();
+        const sessionID = getCookie('sessionID');
+
+        if (!listName) {
+            alert('Please enter a list name.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/createList', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sessionID, listName })
+            });
+
+            if (response.ok) {
+                location.reload(); // Reload the page to show the new list
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || 'Unable to create list.'}`);
+            }
+        } catch (error) {
+            console.error('Error creating list:', error);
+            alert('An unexpected error occurred. Please try again later.');
+        }
+    });
+</script>
+
 </body>
 </html>
