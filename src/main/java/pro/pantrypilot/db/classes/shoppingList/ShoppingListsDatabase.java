@@ -84,4 +84,42 @@ public class ShoppingListsDatabase {
             return false;
         }
     }
+
+    public static ShoppingList getShoppingListWithIngredients(int shoppingListID) {
+        String sql = "SELECT sl.shoppingListID, sl.shoppingListName, sl.userID, sl.createdAt, sl.lastUpdated, " +
+                "si.ingredientID, si.quantity, si.unit, i.ingredientName " +
+                "FROM shopping_lists sl " +
+                "JOIN shopping_list_ingredients si ON sl.shoppingListID = si.shoppingListID " +
+                "JOIN ingredients i ON si.ingredientID = i.ingredientID " +
+                "WHERE sl.shoppingListID = ?";
+
+        ShoppingList shoppingList = null;
+        try {
+            Connection conn = DatabaseConnectionManager.getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, shoppingListID);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        if (shoppingList == null) {
+                            String shoppingListName = rs.getString("shoppingListName");
+                            String userID = rs.getString("userID");
+                            Timestamp createdAt = rs.getTimestamp("createdAt");
+                            Timestamp lastUpdated = rs.getTimestamp("lastUpdated");
+                            shoppingList = new ShoppingList(shoppingListID, userID, shoppingListName, createdAt, lastUpdated);
+                            shoppingList.setShoppingListIngredients(new ArrayList<>());
+                        }
+                        int ingredientID = rs.getInt("ingredientID");
+                        int quantity = rs.getInt("quantity");
+                        String unit = rs.getString("unit");
+                        String ingredientName = rs.getString("ingredientName");
+                        ShoppingListIngredient ingredient = new ShoppingListIngredient(shoppingListID, ingredientID, quantity, unit, ingredientName);
+                        shoppingList.getShoppingListIngredients().add(ingredient);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving shopping list with ingredients for shoppingListID: " + shoppingListID, e);
+        }
+        return shoppingList;
+    }
 }
