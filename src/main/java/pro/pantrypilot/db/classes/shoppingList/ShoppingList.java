@@ -7,6 +7,7 @@ import pro.pantrypilot.endpoints.api.shoppingLists.GetShoppingLists;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class ShoppingList {
 
@@ -17,6 +18,7 @@ public class ShoppingList {
     private final String name;
     private Timestamp createdAt;
     private Timestamp lastUpdated;
+    private ArrayList<ShoppingListIngredient> shoppingListIngredients;
 
 
     public ShoppingList(int shoppingListID, String userID, String name, Timestamp createdAt, Timestamp lastUpdated) {
@@ -77,5 +79,13 @@ public class ShoppingList {
 
     public void setLastUpdated(Timestamp lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public ArrayList<ShoppingListIngredient> getShoppingListIngredients() {
+        return shoppingListIngredients;
+    }
+
+    public void setShoppingListIngredients(ArrayList<ShoppingListIngredient> shoppingListIngredients) {
+        this.shoppingListIngredients = shoppingListIngredients;
     }
 }
