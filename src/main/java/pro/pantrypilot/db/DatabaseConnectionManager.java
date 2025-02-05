@@ -61,9 +61,10 @@ public class DatabaseConnectionManager {
 
         UsersDatabase.initializeUserDatabase();
         SessionsDatabase.initializeSessionsDatabase();
+        IngredientsDatabase.initializeIngredientsDatabase();
         RecipeDatabase.initializeRecipeDatabase();
         RecipeIngredientsDatabase.initializeRecipeIngredientsDatabase();
-        IngredientsDatabase.initializeIngredientsDatabase();
+
 
 
     }
