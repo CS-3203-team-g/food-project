@@ -1,4 +1,4 @@
-package pro.pantrypilot.db.classes.ingredients;
+package pro.pantrypilot.db.classes.recipe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
