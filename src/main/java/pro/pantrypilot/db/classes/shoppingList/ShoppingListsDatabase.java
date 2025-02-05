@@ -43,16 +43,15 @@ public class ShoppingListsDatabase {
         }
     }
 
-    public static List<String> getShoppingListsByUser(String userID) {
-        String getShoppingListsSQL = "SELECT shoppingListName, lastUpdated, shoppingListID FROM shopping_lists WHERE userID = ? ORDER BY lastUpdated DESC";
-        List<String> shoppingLists = new ArrayList<>();
+    public static List<ShoppingList> getShoppingListsByUser(String userID) {
+        String getShoppingListsSQL = "SELECT shoppingListName, lastUpdated, shoppingListID, userID, createdAt FROM shopping_lists WHERE userID = ? ORDER BY lastUpdated DESC";
+        List<ShoppingList> shoppingLists = new ArrayList<>();
         try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(getShoppingListsSQL)) {
             preparedStatement.setString(1, userID);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    shoppingLists.add(resultSet.getString("shoppingListName"));
-                    shoppingLists.add(resultSet.getString("lastUpdated"));
-                    shoppingLists.add(resultSet.getString("shoppingListID"));
+                    ShoppingList shoppingList = new ShoppingList(resultSet);
+                    shoppingLists.add(shoppingList);
                 }
             }
         } catch (SQLException e) {

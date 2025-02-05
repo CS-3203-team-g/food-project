@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.pantrypilot.db.classes.session.Session;
 import pro.pantrypilot.db.classes.session.SessionsDatabase;
+import pro.pantrypilot.db.classes.shoppingList.ShoppingList;
 import pro.pantrypilot.db.classes.shoppingList.ShoppingListsDatabase;
 
 import java.io.BufferedReader;
@@ -48,7 +49,7 @@ public class GetShoppingLists implements HttpHandler {
         String userID = session.getUserID();
 
         // Fetch shopping lists for the user
-        List<String> shoppingLists = ShoppingListsDatabase.getShoppingListsByUser(userID);
+        List<ShoppingList> shoppingLists = ShoppingListsDatabase.getShoppingListsByUser(userID);
 
         // Convert shopping lists to JSON
         String jsonResponse = new Gson().toJson(shoppingLists);
