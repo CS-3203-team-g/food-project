@@ -41,6 +41,7 @@ public class Main {
         server.createContext("/settings", new pro.pantrypilot.endpoints.pages.settings.Settings());
         server.createContext("/recipes", new pro.pantrypilot.endpoints.pages.recipes.Recipes());
         server.createContext("/recipe", new pro.pantrypilot.endpoints.pages.recipes.Recipe());
+        server.createContext("/lists", new pro.pantrypilot.endpoints.pages.lists.Lists());
 
 //        API endpoints
         logger.info("Creating API Contexts");
@@ -50,6 +51,7 @@ public class Main {
         server.createContext("/api/getRecipesWithoutIngredients", new pro.pantrypilot.endpoints.api.recipes.GetRecipesWithoutIngredients());
         server.createContext("/api/getRecipesWithIngredients", new pro.pantrypilot.endpoints.api.recipes.GetRecipesWithIngredients());
         server.createContext("/api/getRecipeWithIngredients", new pro.pantrypilot.endpoints.api.recipes.GetRecipeWithIngredients());
+        server.createContext("/api/getShoppingLists", new pro.pantrypilot.endpoints.api.shoppingLists.GetShoppingLists());
 
 
         logger.info("Starting HttpServer");

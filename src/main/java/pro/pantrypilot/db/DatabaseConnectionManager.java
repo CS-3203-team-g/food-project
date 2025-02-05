@@ -7,6 +7,7 @@ import pro.pantrypilot.db.classes.recipe.IngredientsDatabase;
 import pro.pantrypilot.db.classes.recipe.RecipeDatabase;
 import pro.pantrypilot.db.classes.recipe.RecipeIngredientsDatabase;
 import pro.pantrypilot.db.classes.session.SessionsDatabase;
+import pro.pantrypilot.db.classes.shoppingList.ShoppingListsDatabase;
 import pro.pantrypilot.db.classes.user.UsersDatabase;
 
 import java.sql.Connection;
@@ -64,8 +65,7 @@ public class DatabaseConnectionManager {
         IngredientsDatabase.initializeIngredientsDatabase();
         RecipeDatabase.initializeRecipeDatabase();
         RecipeIngredientsDatabase.initializeRecipeIngredientsDatabase();
-
-
+        ShoppingListsDatabase.initializeShoppingListsDatabase();
 
     }
 }
