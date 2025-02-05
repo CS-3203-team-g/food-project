@@ -1,4 +1,4 @@
-package pro.pantrypilot.db.classes.ingredients;
+package pro.pantrypilot.db.classes.recipe;
 
 public class Ingredient {
 
