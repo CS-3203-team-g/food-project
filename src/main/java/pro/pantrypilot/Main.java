@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.pantrypilot.config.ConfigurationManager;
 import pro.pantrypilot.db.DatabaseConnectionManager;
+import pro.pantrypilot.db.classes.recipe.RecipeIngredientsDatabase;
 import pro.pantrypilot.endpoints.api.signup.CreateUser;
 
 import java.io.IOException;
@@ -38,17 +39,23 @@ public class Main {
         server.createContext("/login", new pro.pantrypilot.endpoints.pages.login.Login());
         server.createContext("/signup", new pro.pantrypilot.endpoints.pages.signup.SignUp());
         server.createContext("/settings", new pro.pantrypilot.endpoints.pages.settings.Settings());
+        server.createContext("/recipes", new pro.pantrypilot.endpoints.pages.recipes.Recipes());
+        server.createContext("/recipe", new pro.pantrypilot.endpoints.pages.recipes.Recipe());
 
 //        API endpoints
         logger.info("Creating API Contexts");
         server.createContext("/api/createUser", new pro.pantrypilot.endpoints.api.signup.CreateUser());
         server.createContext("/api/login", new pro.pantrypilot.endpoints.api.login.Login());
         server.createContext("/api/changePassword", new pro.pantrypilot.endpoints.api.settings.ChangePassword());
+        server.createContext("/api/getRecipesWithoutIngredients", new pro.pantrypilot.endpoints.api.recipes.GetRecipesWithoutIngredients());
+        server.createContext("/api/getRecipesWithIngredients", new pro.pantrypilot.endpoints.api.recipes.GetRecipesWithIngredients());
+        server.createContext("/api/getRecipeWithIngredients", new pro.pantrypilot.endpoints.api.recipes.GetRecipeWithIngredients());
 
 
         logger.info("Starting HttpServer");
         server.start();
         logger.info("HttpServer Started");
+
     }
 
 }
