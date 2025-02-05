@@ -36,7 +36,7 @@ public class GetShoppingListWithIngredients implements HttpHandler {
 
         ShoppingList shoppingList = ShoppingListsDatabase.getShoppingListWithIngredients(shoppingListID);
         if (shoppingList == null) {
-            logger.debug("Shopping list not found for ID: {}", shoppingListID);
+            logger.debug("Shopping list not found or empty for ID: {}", shoppingListID);
             exchange.sendResponseHeaders(404, -1); // Not Found
             return;
         }
