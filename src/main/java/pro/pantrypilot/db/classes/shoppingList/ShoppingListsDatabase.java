@@ -122,4 +122,27 @@ public class ShoppingListsDatabase {
         }
         return shoppingList;
     }
+
+    public static ShoppingList getShoppingListWithoutIngredients(int shoppingListID) {
+        String sql = "SELECT shoppingListID, shoppingListName, userID, createdAt, lastUpdated " +
+                "FROM shopping_lists WHERE shoppingListID = ?";
+
+        ShoppingList shoppingList = null;
+        try (Connection conn = DatabaseConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, shoppingListID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String shoppingListName = rs.getString("shoppingListName");
+                    String userID = rs.getString("userID");
+                    Timestamp createdAt = rs.getTimestamp("createdAt");
+                    Timestamp lastUpdated = rs.getTimestamp("lastUpdated");
+                    shoppingList = new ShoppingList(shoppingListID, userID, shoppingListName, createdAt, lastUpdated);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving shopping list without ingredients for shoppingListID: " + shoppingListID, e);
+        }
+        return shoppingList;
+    }
 }

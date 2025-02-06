@@ -47,7 +47,7 @@ public class AddIngredientToShoppingList implements HttpHandler {
         }
 
         // Check if the user owns the shopping list
-        ShoppingList shoppingList = ShoppingListsDatabase.getShoppingListWithIngredients(addIngredientRequest.shoppingListID);
+        ShoppingList shoppingList = ShoppingListsDatabase.getShoppingListWithoutIngredients(addIngredientRequest.shoppingListID);
         if (shoppingList == null) {
             logger.debug("Shopping list not found for ID: {}", addIngredientRequest.shoppingListID);
             exchange.sendResponseHeaders(404, -1); // Not Found
