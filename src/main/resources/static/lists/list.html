@@ -65,6 +65,18 @@
 
 <!-- Main Content -->
 <main class="main-content">
+
+    <!-- Add this form to input new items -->
+    <div class="container mt-4">
+        <h4>Add New Item</h4>
+        <div class="input-group mb-3">
+<!--            <input type="text" id="newItemName" class="form-control" placeholder="Enter item name" required />-->
+            <input type="number" id="newItemQuantity" class="form-control" placeholder="Quantity" required />
+            <input type="text" id="newItemUnit" class="form-control" placeholder="Unit" required />
+            <button id="addItemBtn" class="btn btn-primary">Add Item</button>
+        </div>
+    </div>
+
     <section class="py-5">
         <div class="container">
             <div id="listDetails" class="row">
@@ -86,11 +98,25 @@
 
 <!-- JavaScript to fetch and display list details -->
 <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-        function getListID() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('id');
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === " ") c = c.substring(1);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
         }
+        return null;
+    }
+
+    const sessionID = getCookie('sessionID');
+
+    function getListID() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+    }
+
+    document.addEventListener("DOMContentLoaded", async function () {
 
         const listID = getListID();
         if (!listID) {
@@ -138,6 +164,75 @@
             console.error('Error fetching list details:', error);
         }
     });
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        const ingredientDropdown = document.createElement('select');
+        ingredientDropdown.id = 'ingredientDropdown';
+        ingredientDropdown.className = 'form-control';
+        ingredientDropdown.required = true;
+
+        try {
+            const response = await fetch('/api/getIngredients');
+            if (!response.ok) {
+                throw new Error('Failed to fetch ingredients');
+            }
+            const ingredients = await response.json();
+
+            ingredients.forEach(ingredient => {
+                const option = document.createElement('option');
+                option.value = ingredient.ingredientID;
+                option.textContent = ingredient.ingredientName;
+                ingredientDropdown.appendChild(option);
+            });
+
+            const newItemUnit = document.getElementById('newItemQuantity');
+            newItemQuantity.parentNode.insertBefore(ingredientDropdown, newItemQuantity);
+        } catch (error) {
+            console.error('Error fetching ingredients:', error);
+        }
+    });
+
+    document.getElementById('addItemBtn').addEventListener('click', async function() {
+        const itemName = document.getElementById('ingredientDropdown').value;
+        const itemQuantity = document.getElementById('newItemQuantity').value.trim();
+        const itemUnit = document.getElementById('newItemUnit').value.trim();
+        const listID = getListID();
+
+        if (!itemName || !itemQuantity || !itemUnit) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/addIngredientToShoppingList', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    shoppingListID: listID,
+                    ingredientID: itemName,
+                    quantity: itemQuantity,
+                    unit: itemUnit,
+                    sessionID: sessionID
+                })
+            });
+
+            if (response.ok) {
+                alert('Item added successfully!');
+                // Optionally, refresh the list details
+            } else {
+                alert('Failed to add item.');
+            }
+        } catch (error) {
+            console.error('Error adding item:', error);
+        }
+
+        // Clear the input fields
+        document.getElementById('newItemQuantity').value = '';
+        document.getElementById('newItemUnit').value = '';
+    });
 </script>
+
 </body>
 </html>
