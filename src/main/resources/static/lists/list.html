@@ -220,7 +220,12 @@
 
             if (response.ok) {
                 alert('Item added successfully!');
-                // Optionally, refresh the list details
+
+                // add the new item to the ingredient list
+                const listIngredients = document.querySelector('#listIngredients ul');
+                const newItem = document.createElement('li');
+                newItem.textContent = `${itemQuantity} ${itemUnit} ${document.querySelector('#ingredientDropdown option:checked').textContent}`;
+                listIngredients.appendChild(newItem);
             } else {
                 alert('Failed to add item.');
             }
