@@ -66,11 +66,13 @@ public class ShoppingListIngredientsDatabase {
         return ingredients;
     }
 
-    public static boolean removeIngredientFromShoppingList(int shoppingListID, int ingredientID) {
-        String removeIngredientSQL = "DELETE FROM shopping_list_ingredients WHERE shoppingListID = ? AND ingredientID = ?";
+    public static boolean removeIngredientFromShoppingList(int shoppingListID, int ingredientID, int quantity, String unit) {
+        String removeIngredientSQL = "DELETE FROM shopping_list_ingredients WHERE shoppingListID = ? AND ingredientID = ? AND quantity = ? AND unit = ? LIMIT 1";
         try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(removeIngredientSQL)) {
             preparedStatement.setInt(1, shoppingListID);
             preparedStatement.setInt(2, ingredientID);
+            preparedStatement.setInt(3, quantity);
+            preparedStatement.setString(4, unit);
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
