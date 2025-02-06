@@ -49,7 +49,15 @@
           <li class="nav-item">
             <a class="nav-link" href="/">Home</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Recipes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/lists">Lists</a>
+          </li>
         </ul>
+        <!-- Login Button (will be replaced if a user is logged in) -->
+        <a id="loginBtn" href="login" class="btn btn-primary ms-3">Login</a>
       </div>
     </div>
   </nav>
@@ -214,6 +222,32 @@
         alert("An unexpected error occurred. Please try again later.");
       }
     });
+
+    // Check if the user is logged in by looking for the "username" cookie
+    if (username) {
+      // Replace the login button with a dropdown showing the username
+      const loginBtn = document.getElementById("loginBtn");
+      if (loginBtn) {
+        const dropdownDiv = document.createElement("div");
+        dropdownDiv.className = "dropdown ms-3";
+        dropdownDiv.innerHTML =
+                '<button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">' +
+                username +
+                '</button>' +
+                '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">' +
+                '<li><a class="dropdown-item" href="/settings">Settings</a></li>' +
+                '<li><a class="dropdown-item" href="#" id="logoutBtn">Sign Out</a></li>' +
+                "</ul>";
+        loginBtn.parentNode.replaceChild(dropdownDiv, loginBtn);
+
+        // Add event listener for the sign out button
+        document.getElementById("logoutBtn").addEventListener("click", function () {
+          document.cookie = "sessionID=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          document.cookie = "username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          window.location.href = "/";
+        });
+      }
+    }
   </script>
 </body>
 </html>

@@ -41,4 +41,20 @@ public class IngredientsDatabase {
         }
         return ingredientNames;
     }
+
+    public static ArrayList<Ingredient> getAllIngredients() {
+        String getAllIngredientsSQL = "SELECT ingredientID, ingredientName FROM ingredients;";
+        ArrayList<Ingredient> ingredientNames = new ArrayList<>();
+        try (Statement statement = DatabaseConnectionManager.getConnection().createStatement();
+             ResultSet resultSet = statement.executeQuery(getAllIngredientsSQL)) {
+
+            while (resultSet.next()) {
+                Ingredient ingredient = new Ingredient(resultSet.getInt("ingredientID"), resultSet.getString("ingredientName"));
+                ingredientNames.add(ingredient);
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving ingredient names", e);
+        }
+        return ingredientNames;
+    }
 }
