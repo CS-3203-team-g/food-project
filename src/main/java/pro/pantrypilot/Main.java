@@ -57,6 +57,7 @@ public class Main {
         server.createContext("/api/createShoppingList", new pro.pantrypilot.endpoints.api.shoppingLists.CreateShoppingList());
         server.createContext("/api/getIngredients", new pro.pantrypilot.endpoints.api.recipes.GetIngredients());
         server.createContext("/api/addIngredientToShoppingList", new pro.pantrypilot.endpoints.api.shoppingLists.AddIngredientToShoppingList());
+        server.createContext("/api/removeIngredientFromShoppingList", new pro.pantrypilot.endpoints.api.shoppingLists.RemoveIngredientFromShoppingList());
 
 
         logger.info("Starting HttpServer");
