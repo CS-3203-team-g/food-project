@@ -40,10 +40,10 @@
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#features">Features</a>
+                    <a class="nav-link" href="/recipes">Recipes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#getting-started">Get Started</a>
+                    <a class="nav-link" href="/lists">Lists</a>
                 </li>
             </ul>
             <!-- Login Button (will be replaced if a user is logged in) -->
@@ -169,6 +169,7 @@
                     username +
                     '</button>' +
                     '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">' +
+                    '<li><a class="dropdown-item" href="/settings">Settings</a></li>' +
                     '<li><a class="dropdown-item" href="#" id="logoutBtn">Sign Out</a></li>' +
                     "</ul>";
                 loginBtn.parentNode.replaceChild(dropdownDiv, loginBtn);
