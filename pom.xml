@@ -62,6 +62,7 @@
     </dependencies>
 
     <build>
+        <finalName>PantryPilot</finalName>
         <plugins>
             <!-- Maven Shade Plugin to create an uber-jar with a main class -->
             <plugin>
