@@ -2,7 +2,6 @@ package pro.pantrypilot.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.pantrypilot.config.ConfigurationManager;
 import pro.pantrypilot.db.classes.recipe.IngredientsDatabase;
 import pro.pantrypilot.db.classes.recipe.RecipeDatabase;
 import pro.pantrypilot.db.classes.recipe.RecipeIngredientsDatabase;
@@ -21,9 +20,9 @@ public class DatabaseConnectionManager {
 
     private static Connection conn;
 
-    private static final String DB_URL = ConfigurationManager.getProperty("database.url");
-    private static final String DB_USERNAME = ConfigurationManager.getProperty("database.username");
-    private static final String DB_PASSWORD = ConfigurationManager.getProperty("database.password");
+    private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USERNAME = System.getenv("DB_USERNAME");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
     public static void connectToDatabase() {
 
