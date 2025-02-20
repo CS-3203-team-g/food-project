@@ -4,4 +4,4 @@ src/main/resources/config.properties
 /.idea
 /logs
 /.vscode
-*.yml
+docker-compose.yml

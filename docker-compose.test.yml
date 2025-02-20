@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app-test:
+    image: maven:3.8.4-openjdk-8
+    working_dir: /app
+    volumes:
+      - .:/app:delegated
+    command: mvn clean test -B
+    environment:
+      - SERVER_PORT=8080
+      - DB_HOST=db
+      - DB_USER=pantrypilot_user
+      - DB_PASSWORD=pantry_pilot_password
+      - DB_NAME=pantry_pilot
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=pantry_pilot
+      - MYSQL_USER=pantrypilot_user
+      - MYSQL_PASSWORD=pantry_pilot_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "--host=127.0.0.1", "--user=root", "--password=root_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  db-data:
+    driver: local
