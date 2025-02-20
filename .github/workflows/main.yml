@@ -31,15 +31,26 @@ jobs:
 
       - name: Run Docker Compose Tests
         run: |
-          docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
-          EXIT_CODE=$(docker-compose -f docker-compose.test.yml ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v '^0$' | wc -l | tr -d ' ')
+          # Start the containers
+          docker-compose -f docker-compose.test.yml up --build -d
+          
+          # Get the container ID before running tests
+          container_id=$(docker-compose -f docker-compose.test.yml ps -q app-test)
+          
+          # Wait for tests to complete
+          docker wait $container_id
+          
+          # Get exit code
+          EXIT_CODE=$(docker inspect $container_id -f '{{.State.ExitCode}}')
           
           # Copy test results from container
-          container_id=$(docker-compose -f docker-compose.test.yml ps -q app-test)
           docker cp $container_id:/app/target/surefire-reports ./target/surefire-reports
           
+          # Stop containers
+          docker-compose -f docker-compose.test.yml down
+          
           if [ "$EXIT_CODE" != "0" ]; then
-            echo "Tests failed"
+            echo "Tests failed with exit code $EXIT_CODE"
             exit 1
           fi
 
