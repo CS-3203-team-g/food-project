@@ -10,5 +10,5 @@ FROM openjdk:8-jre-slim
 WORKDIR /app
 # ...existing code: copy jar from build stage...
 COPY --from=build /app/target/PantryPilot.jar /app/PantryPilot.jar
-EXPOSE 8080
+EXPOSE 80
 CMD ["java", "-jar", "PantryPilot.jar"]
