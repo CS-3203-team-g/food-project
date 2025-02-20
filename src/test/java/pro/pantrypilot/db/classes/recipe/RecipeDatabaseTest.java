@@ -10,6 +10,8 @@ class RecipeDatabaseTest {
 
     private void initTest() {
         IngredientsDatabase.initializeIngredientsDatabase();
+        RecipeDatabase.initializeRecipeDatabase();
+        RecipeIngredientsDatabase.initializeRecipeIngredientsDatabase();
 
         String clearRecipeTableSQL = "DELETE FROM pantry_pilot.recipes;";
         String clearIngredientTableSQL = "DELETE FROM pantry_pilot.ingredients;";
