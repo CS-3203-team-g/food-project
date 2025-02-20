@@ -19,7 +19,7 @@ class IndexTest {
     void handle() throws IOException {
         // Load configuration and get the server port.
         ConfigurationManager.loadConfig();
-        int port = ConfigurationManager.getIntProperty("server.port");
+        int port = Integer.parseInt(System.getenv("SERVER_PORT"));
 
         // Create and start an HTTP server on the configured port.
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
