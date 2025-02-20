@@ -43,8 +43,12 @@ jobs:
           # Get exit code
           EXIT_CODE=$(docker inspect $container_id -f '{{.State.ExitCode}}')
           
+          # Create directory for test results with proper permissions
+          sudo mkdir -p target/surefire-reports
+          sudo chown -R $USER:$USER target
+          
           # Copy test results from container
-          docker cp $container_id:/app/target/surefire-reports ./target/surefire-reports
+          docker cp $container_id:/app/target/surefire-reports/. ./target/surefire-reports/
           
           # Stop containers
           docker-compose -f docker-compose.test.yml down
