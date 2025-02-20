@@ -71,29 +71,3 @@ jobs:
           context: .
           push: true
           tags: jlw1808/pantrypilot:dev
-
-      - name: Deploy to server
-        run: |
-          echo "Deploying to ${{ env.DEPLOY_ENV }} environment"
-          if [[ ${{ env.DEPLOY_ENV }} == 'production' ]]; then
-            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no jacob@23.123.211.20 << 'EOF'
-            # Stop the current instance (if any)
-            screen -S food -X quit || true
-
-            # Pull the latest code
-            cd ./food-project
-
-            # Build the project
-            bash start.sh
-            EOF
-          else
-            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no jacob@23.123.211.20 << 'EOF'
-            # Stop the current instance (if any)
-            screen -S food-dev -X quit || true
-
-            # Pull the latest code
-            cd ./food-project-dev
-
-            # Build the project
-            bash start.sh
-            EOF
