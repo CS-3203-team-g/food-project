@@ -6,7 +6,7 @@ COPY . /app
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run
-FROM openjdk:11-jre-slim
+FROM openjdk:8-jre-slim
 WORKDIR /app
 # ...existing code: copy jar from build stage...
 COPY --from=build /app/target/PantryPilot.jar /app/PantryPilot.jar
