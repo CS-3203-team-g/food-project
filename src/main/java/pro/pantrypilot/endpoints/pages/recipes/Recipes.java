@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.pantrypilot.helpers.FileHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,7 +21,7 @@ public class Recipes implements HttpHandler {
         byte[] responseBytes;
         try {
             // Read the file as bytes and then convert to String with UTF-8 encoding
-            byte[] fileBytes = Files.readAllBytes(Paths.get("src/main/resources/static/recipes/recipes.html"));
+            byte[] fileBytes = FileHelper.readFile("static/recipes/recipes.html");
             String response = new String(fileBytes, StandardCharsets.UTF_8);
             responseBytes = response.getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {

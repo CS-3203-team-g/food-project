@@ -2,6 +2,7 @@ package pro.pantrypilot.endpoints.pages.signup;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import pro.pantrypilot.helpers.FileHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +17,7 @@ public class SignUp implements HttpHandler {
         byte[] responseBytes;
         try {
             // Read the file as bytes and then convert to String with UTF-8 encoding
-            byte[] fileBytes = Files.readAllBytes(Paths.get("src/main/resources/static/signup/signup.html"));
+            byte[] fileBytes = FileHelper.readFile("static/signup/signup.html");
             String response = new String(fileBytes, StandardCharsets.UTF_8);
             responseBytes = response.getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {
