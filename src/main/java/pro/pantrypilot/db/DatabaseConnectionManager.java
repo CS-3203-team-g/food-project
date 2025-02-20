@@ -20,12 +20,18 @@ public class DatabaseConnectionManager {
 
     private static Connection conn;
 
-    private static final String DB_URL = System.getenv("DB_URL");
-    private static final String DB_USERNAME = System.getenv("DB_USERNAME");
+    // Replace the single DB_URL with individual components
+    private static final String DB_HOST = System.getenv("DB_HOST");
+    private static final String DB_NAME = System.getenv("DB_NAME");
+    private static final String DB_USERNAME = System.getenv("DB_USER");
     private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
-    public static void connectToDatabase() {
+    // Construct the URL when needed
+    private static String getDbUrl() {
+        return String.format("jdbc:mariadb://%s:3306/%s", DB_HOST, DB_NAME);
+    }
 
+    public static void connectToDatabase() {
         try {
             logger.info("Loading Database Driver");
             Class.forName("org.mariadb.jdbc.Driver");
@@ -34,21 +40,19 @@ public class DatabaseConnectionManager {
             logger.error("Error loading database driver", e);
         }
 
-
         try {
             logger.info("Connecting to Database");
-            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            conn = DriverManager.getConnection(getDbUrl(), DB_USERNAME, DB_PASSWORD);
             logger.info("Successfully connected to database");
         } catch (SQLException e) {
             logger.error("Error connecting to database", e);
             throw new RuntimeException("Error connecting to database", e);
         }
-
     }
 
     public static Connection getConnection() {
         try {
-            if(conn.isClosed() || conn == null) {
+            if(conn == null || conn.isClosed()) {
                 logger.info("Reconnecting to Database");
                 connectToDatabase();
             }
