@@ -1,59 +1,93 @@
-name: Deploy to Server
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main
-      - dev
-  workflow_dispatch:  # 👈 This enables manual triggering
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
 
 jobs:
-  deploy-prod:
-    if: github.ref == 'refs/heads/main'
+  test:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Install sshpass
-      run: sudo apt-get update && sudo apt-get install -y sshpass
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Deploy to Production Server
-      run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no jacob@23.123.211.20 << 'EOF'
-        # Stop the current instance (if any)
-        screen -S food -X quit || true
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
 
-        # Pull the latest code
-        cd ./food-project
+      - name: Run Docker Compose Tests
+        run: |
+          docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+          EXIT_CODE=$(docker-compose -f docker-compose.test.yml ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v '^0$' | wc -l | tr -d ' ')
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "Tests failed"
+            exit 1
+          fi
 
-        # Build the project
-        bash start.sh
-        
-        EOF
-
-  deploy-dev:
-    if: github.ref == 'refs/heads/dev'
+  deploy:
+    needs: test
+    if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Install sshpass
-      run: sudo apt-get update && sudo apt-get install -y sshpass
+      - name: Set environment variables
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "DEPLOY_ENV=production" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_ENV=development" >> $GITHUB_ENV
+          fi
 
-    - name: Deploy to Development Server
-      run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no jacob@23.123.211.20 << 'EOF'
-        # Stop the current instance (if any)
-        screen -S food-dev -X quit || true
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-        # Pull the latest code
-        cd ./food-project-dev
+      - name: Build and push Docker image for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: jlw1808/pantrypilot:latest
 
-        # Build the project
-        bash start.sh
-        
-        EOF
+      - name: Build and push Docker image for dev branch
+        if: github.ref == 'refs/heads/dev'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: jlw1808/pantrypilot:dev
+
+      - name: Deploy via SSH for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/jacob/pantrypilot-prod && docker-compose down && docker-compose up -d
+
+      - name: Deploy via SSH for dev branch
+        if: github.ref == 'refs/heads/dev'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/jacob/pantrypilot-dev && docker-compose down && docker-compose up -d
