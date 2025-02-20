@@ -1,72 +1,114 @@
 package pro.pantrypilot.db.classes.recipe;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
 import java.sql.Connection;
+import java.sql.Statement;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-class RecipeDatabaseTest {
 
-    private void initTest() {
+class RecipeDatabaseTest {
+    
+    private Connection connection;
+    private static final int TEST_RECIPE_ID = 1;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        // Initialize the test databases
         IngredientsDatabase.initializeIngredientsDatabase();
         RecipeDatabase.initializeRecipeDatabase();
         RecipeIngredientsDatabase.initializeRecipeIngredientsDatabase();
+        connection = DatabaseConnectionManager.getConnection();
+        
+        // Clean up any existing data
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("DELETE FROM recipe_ingredients");
+            stmt.execute("DELETE FROM recipes");
+            stmt.execute("DELETE FROM ingredients");
+        }
+        
+        // Insert test data
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("INSERT INTO recipes (recipeID, title, instructions, thumbnailUrl, rating) " +
+                        "VALUES (" + TEST_RECIPE_ID + ", 'Tiramisu Blondies', " +
+                        "'Preheat the oven to 350 degrees...', " +
+                        "'https://www.allrecipes.com/thmb/example.jpg', 0)");
+            stmt.execute("INSERT INTO ingredients (ingredientID, ingredientName) " +
+                        "VALUES (1, 'semisweet chocolate chips')");
+            stmt.execute("INSERT INTO recipe_ingredients (recipeID, ingredientID, quantity, unit) " +
+                        "VALUES (" + TEST_RECIPE_ID + ", 1, 1, 'cup')");
+        }
+    }
 
-        String clearRecipeTableSQL = "DELETE FROM pantry_pilot.recipes;";
-        String clearIngredientTableSQL = "DELETE FROM pantry_pilot.ingredients;";
-        String clearRecipeIngredientTableSQL = "DELETE FROM pantry_pilot.recipe_ingredients;";
-
-        String insertRecipeSQL = "INSERT INTO pantry_pilot.recipes (recipeID, title, instructions, thumbnailUrl, rating) VALUES (1, 'Tiramisu Blondies', 'Preheat the oven to 350 degrees...', 'https://www.allrecipes.com/thmb/7RTcK0893zgtVf7Gg6LWmew6g_U=/750x0/filters:no_upscale():max_bytes(150000):strip_icc()/8781917_Tiramisu-Blondies_Kim-Shupe_4x3-38045a8e3d5944b6abe149ca8b02d16d.jpg', 0);";
-        String insertIngredientSQL = "INSERT INTO pantry_pilot.ingredients (ingredientID, ingredientName) VALUES (1, 'semisweet chocolate chips');";
-        String insertRecipeIngredientSQL = "INSERT INTO pantry_pilot.recipe_ingredients (recipeID, ingredientID, quantity, unit) VALUES (1, 1, 1, 'cup');";
-
-        DatabaseConnectionManager.initializeDatabase();
-        try {
-            Connection conn = DatabaseConnectionManager.getConnection();
-            conn.createStatement().execute(clearRecipeTableSQL);
-            conn.createStatement().execute(clearIngredientTableSQL);
-            conn.createStatement().execute(clearRecipeIngredientTableSQL);
-            conn.createStatement().execute(insertRecipeSQL);
-            conn.createStatement().execute(insertIngredientSQL);
-            conn.createStatement().execute(insertRecipeIngredientSQL);
-        } catch (Exception e) {
-            e.printStackTrace();
+    @AfterEach
+    void tearDown() throws Exception {
+        // Clean up test data
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("DELETE FROM recipe_ingredients");
+            stmt.execute("DELETE FROM recipes");
+            stmt.execute("DELETE FROM ingredients");
         }
     }
 
     @Test
     void initializeRecipeDatabase() {
+        // This test verifies that we can initialize the database without errors
         RecipeDatabase.initializeRecipeDatabase();
+        // If we get here without exceptions, the test passes
         assertTrue(true);
     }
 
     @Test
     void getRecipesNoIngredients() {
-        RecipeDatabase.initializeRecipeDatabase();
-        initTest();
-        assertEquals("Tiramisu Blondies", RecipeDatabase.getRecipesNoIngredients().get(0).getTitle());
+        List<Recipe> recipes = RecipeDatabase.getRecipesNoIngredients();
+        
+        assertNotNull(recipes, "Recipe list should not be null");
+        assertEquals(1, recipes.size(), "Should have exactly one recipe");
+        Recipe recipe = recipes.get(0);
+        assertEquals("Tiramisu Blondies", recipe.getTitle());
+        assertEquals("Preheat the oven to 350 degrees...", recipe.getInstructions());
     }
 
     @Test
     void getRecipesWithIngredients() {
-        RecipeDatabase.initializeRecipeDatabase();
-        initTest();
-        assertEquals("Tiramisu Blondies", RecipeDatabase.getRecipesWithIngredients().get(0).getTitle());
-        assertEquals("semisweet chocolate chips", RecipeDatabase.getRecipesWithIngredients().get(0).getIngredients().get(0).getIngredientName());
-        assertEquals(1, RecipeDatabase.getRecipesWithIngredients().get(0).getIngredients().get(0).getQuantity());
-        assertEquals("cup", RecipeDatabase.getRecipesWithIngredients().get(0).getIngredients().get(0).getUnit());
-        assertEquals("Preheat the oven to 350 degrees...", RecipeDatabase.getRecipesWithIngredients().get(0).getInstructions());
+        List<Recipe> recipes = RecipeDatabase.getRecipesWithIngredients();
+        
+        assertNotNull(recipes, "Recipe list should not be null");
+        assertEquals(1, recipes.size(), "Should have exactly one recipe");
+        
+        Recipe recipe = recipes.get(0);
+        assertEquals("Tiramisu Blondies", recipe.getTitle());
+        assertNotNull(recipe.getIngredients(), "Recipe ingredients should not be null");
+        assertEquals(1, recipe.getIngredients().size(), "Should have one ingredient");
+        
+        RecipeIngredient ingredient = recipe.getIngredients().get(0);
+        assertEquals("semisweet chocolate chips", ingredient.getIngredientName());
+        assertEquals(1, ingredient.getQuantity());
+        assertEquals("cup", ingredient.getUnit());
     }
 
     @Test
     void getRecipeWithIngredients() {
-        RecipeDatabase.initializeRecipeDatabase();
-        initTest();
-        assertEquals("Tiramisu Blondies", RecipeDatabase.getRecipeWithIngredients(1).getTitle());
-        assertEquals("semisweet chocolate chips", RecipeDatabase.getRecipeWithIngredients(1).getIngredients().get(0).getIngredientName());
-        assertEquals(1, RecipeDatabase.getRecipeWithIngredients(1).getIngredients().get(0).getQuantity());
-        assertEquals("cup", RecipeDatabase.getRecipeWithIngredients(1).getIngredients().get(0).getUnit());
-        assertEquals("Preheat the oven to 350 degrees...", RecipeDatabase.getRecipeWithIngredients(1).getInstructions());
+        Recipe recipe = RecipeDatabase.getRecipeWithIngredients(TEST_RECIPE_ID);
+        
+        assertNotNull(recipe, "Recipe should not be null");
+        assertEquals("Tiramisu Blondies", recipe.getTitle());
+        assertNotNull(recipe.getIngredients(), "Recipe ingredients should not be null");
+        assertEquals(1, recipe.getIngredients().size(), "Should have one ingredient");
+        
+        RecipeIngredient ingredient = recipe.getIngredients().get(0);
+        assertEquals("semisweet chocolate chips", ingredient.getIngredientName());
+        assertEquals(1, ingredient.getQuantity());
+        assertEquals("cup", ingredient.getUnit());
+    }
+
+    @Test
+    void getNonExistentRecipe() {
+        Recipe recipe = RecipeDatabase.getRecipeWithIngredients(999);
+        assertNull(recipe, "Non-existent recipe should return null");
     }
 }
