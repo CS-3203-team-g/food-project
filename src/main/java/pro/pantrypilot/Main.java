@@ -3,7 +3,6 @@ package pro.pantrypilot;
 import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.pantrypilot.config.ConfigurationManager;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
 import java.io.IOException;
@@ -18,7 +17,6 @@ public class Main {
         logger.info("Starting Pantry Pilot");
 
         logger.info("Loading Config");
-        ConfigurationManager.loadConfig();
         logger.info("Config Loaded");
 
         logger.info("Connecting to Database");
