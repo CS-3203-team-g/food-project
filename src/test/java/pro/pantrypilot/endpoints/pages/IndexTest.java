@@ -2,7 +2,6 @@ package pro.pantrypilot.endpoints.pages;
 
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
-import pro.pantrypilot.config.ConfigurationManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +17,6 @@ class IndexTest {
     @Test
     void handle() throws IOException {
         // Load configuration and get the server port.
-        ConfigurationManager.loadConfig();
         int port = Integer.parseInt(System.getenv("SERVER_PORT"));
 
         // Create and start an HTTP server on the configured port.
