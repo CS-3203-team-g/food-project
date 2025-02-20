@@ -35,8 +35,8 @@
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -62,7 +62,17 @@
     </dependencies>
 
     <build>
+        <finalName>PantryPilot</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+                </configuration>
+            </plugin>
+
             <!-- Maven Shade Plugin to create an uber-jar with a main class -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
