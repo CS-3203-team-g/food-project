@@ -3,6 +3,8 @@ package pro.pantrypilot.db.classes.recipe;
 import org.junit.jupiter.api.Test;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
+import java.sql.Connection;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class IngredientsDatabaseTest {
@@ -10,11 +12,14 @@ class IngredientsDatabaseTest {
     private void initTest() {
         IngredientsDatabase.initializeIngredientsDatabase();
 
+        String clearIngredientTableSQL = "DELETE FROM pantry_pilot.ingredients;";
         String insertIngredientSQL = "INSERT INTO pantry_pilot.ingredients (ingredientID, ingredientName) VALUES (1, 'baking soda');";
 
         DatabaseConnectionManager.initializeDatabase();
         try {
-            DatabaseConnectionManager.getConnection().createStatement().execute(insertIngredientSQL);
+            Connection conn = DatabaseConnectionManager.getConnection();
+            conn.createStatement().execute(clearIngredientTableSQL);
+            conn.createStatement().execute(insertIngredientSQL);
         } catch (Exception e) {
             e.printStackTrace();
         }
