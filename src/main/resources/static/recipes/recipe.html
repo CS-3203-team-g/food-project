@@ -126,6 +126,27 @@
     </div>
 </div>
 
+<!-- Bootstrap Toast Successfully Added Items to List -->
+<div id="successToast" class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="polite" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body">
+            Ingredients successfully added to your list!
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+
+<!-- Bootstrap Toast Failed Adding Items to List -->
+<div id="failToast" class="toast align-items-center text-bg-danger border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="polite" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body">
+            Unknown Error: Failed to add ingredients to your list.
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+
+
 
 <style>
     .dropdown {
@@ -138,6 +159,18 @@
     }
 </style>
 <script>
+    function showSuccessToast() {
+        var toastElement = document.getElementById('successToast');
+        var toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    }
+
+    function showFailedToast() {
+        var toastElement = document.getElementById('failToast');
+        var toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    }
+
     let shoppingLists = [];
 
     function getShoppingListIdByName(name) {
@@ -156,12 +189,19 @@
                 body: JSON.stringify({ sessionID: getCookie('sessionID'), recipeID: getRecipeID(), shoppingListID: shoppingListId })
             });
             if (!response.ok) {
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('addToListModal'));
+                myModal.hide();
+                showFailedToast();
                 throw new Error('Failed to fetch shopping lists');
             }
-
-
+            var myModal = bootstrap.Modal.getInstance(document.getElementById('addToListModal'));
+            myModal.hide();
+            showSuccessToast();
 
         } catch (error) {
+            var myModal = bootstrap.Modal.getInstance(document.getElementById('addToListModal'));
+            myModal.hide();
+            showFailedToast();
             console.error('Error fetching shopping lists:', error);
         }
     }
@@ -295,13 +335,14 @@
             </div>
             <div class="col-12">
               <section id="recipeImage" class="text-center mb-4">
-                <img src="${recipe.thumbnailUrl || 'default-thumbnail.jpg'}" class="recipe-img img-fluid" alt="${recipe.title}">
+                  <img src="${recipe.thumbnailUrl || 'default-thumbnail.jpg'}" class="recipe-img img-fluid" alt="${recipe.title}" style="width: 33%; height: auto;">
               </section>
+
               <!-- Button to trigger modal -->
                 <div>
                   <section id="recipeActions" class="text-center mb-4">
-                    <button type="button" class="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#addToListModal">
-                        Add to list
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addToListModal" style="width: 15%; height: auto;">
+                        Add Ingredients
                     </button>
                   </section>
                 </div>
