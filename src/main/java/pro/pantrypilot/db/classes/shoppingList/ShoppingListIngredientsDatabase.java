@@ -32,7 +32,9 @@ public class ShoppingListIngredientsDatabase {
     }
 
     public static boolean addIngredientToShoppingList(int shoppingListID, int ingredientID, int quantity, String unit) {
-        String addIngredientSQL = "INSERT INTO shopping_list_ingredients (shoppingListID, ingredientID, quantity, unit) VALUES (?, ?, ?, ?)";
+        String addIngredientSQL = "INSERT INTO shopping_list_ingredients (shoppingListID, ingredientID, quantity, unit) " +
+                "VALUES (?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE quantity = shopping_list_ingredients.quantity + VALUES(quantity)";
         try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(addIngredientSQL)) {
             preparedStatement.setInt(1, shoppingListID);
             preparedStatement.setInt(2, ingredientID);
@@ -45,6 +47,7 @@ public class ShoppingListIngredientsDatabase {
             return false;
         }
     }
+
 
     public static List<ShoppingListIngredient> getIngredientsForShoppingList(int shoppingListID) {
         String getIngredientsSQL = "SELECT * FROM shopping_list_ingredients WHERE shoppingListID = ?";
@@ -79,5 +82,36 @@ public class ShoppingListIngredientsDatabase {
             logger.error("Error removing ingredient from shopping list", e);
             return false;
         }
+    }
+
+    /**
+     * Adds all ingredients from the given recipe into the shopping list.
+     *
+     * @param recipeId      the recipe ID to copy ingredients from
+     * @param shoppingListId the shopping list ID to insert ingredients into
+     */
+    public static boolean addIngredientsToShoppingList(int recipeId, int shoppingListId) {
+        String sql = "INSERT INTO pantry_pilot.shopping_list_ingredients (shoppingListID, ingredientID, quantity, unit) " +
+                "SELECT ?, ingredientID, SUM(quantity), unit " +
+                "FROM recipe_ingredients " +
+                "WHERE recipeID = ? " +
+                "GROUP BY ingredientID, unit " +
+                "ON DUPLICATE KEY UPDATE quantity = shopping_list_ingredients.quantity + VALUES(quantity)";
+
+        try (Connection conn = DatabaseConnectionManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // Set the shoppingListID for the insert and recipeID for the SELECT clause
+            pstmt.setInt(1, shoppingListId);
+            pstmt.setInt(2, recipeId);
+
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            // Handle any SQL errors here
+            e.printStackTrace();
+        }
+        return false;
     }
 }
