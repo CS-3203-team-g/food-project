@@ -342,9 +342,11 @@
               <!-- Button to trigger modal -->
                 <div>
                   <section id="recipeActions" class="text-center mb-4">
+                    ${getCookie('username') ? `
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addToListModal" style="width: 15%; height: auto;">
                         Add Ingredients
                     </button>
+                    ` : ''}
                   </section>
                 </div>
             </div>
