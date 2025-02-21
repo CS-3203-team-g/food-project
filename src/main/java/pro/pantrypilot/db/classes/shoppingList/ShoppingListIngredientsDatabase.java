@@ -80,4 +80,33 @@ public class ShoppingListIngredientsDatabase {
             return false;
         }
     }
+
+    /**
+     * Adds all ingredients from the given recipe into the shopping list.
+     *
+     * @param recipeId      the recipe ID to copy ingredients from
+     * @param shoppingListId the shopping list ID to insert ingredients into
+     */
+    public static boolean addIngredientsToShoppingList(int recipeId, int shoppingListId) {
+        String sql = "INSERT INTO pantry_pilot.shopping_list_ingredients (shoppingListID, ingredientID, quantity, unit) " +
+                "SELECT ?, ingredientID, quantity, unit " +
+                "FROM recipe_ingredients " +
+                "WHERE recipeID = ?";
+
+        try (Connection conn = DatabaseConnectionManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // Set the shoppingListID for the insert and recipeID for the SELECT clause
+            pstmt.setInt(1, shoppingListId);
+            pstmt.setInt(2, recipeId);
+
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            // Handle any SQL errors here
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
