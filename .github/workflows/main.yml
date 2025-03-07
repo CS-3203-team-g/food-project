@@ -9,6 +9,10 @@ on:
       - '*'
   workflow_dispatch:
 
+permissions:
+  checks: write
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,12 +31,39 @@ jobs:
 
       - name: Run Docker Compose Tests
         run: |
-          docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
-          EXIT_CODE=$(docker-compose -f docker-compose.test.yml ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v '^0$' | wc -l | tr -d ' ')
+          # Start the containers
+          docker-compose -f docker-compose.test.yml up --build -d
+          
+          # Get the container ID before running tests
+          container_id=$(docker-compose -f docker-compose.test.yml ps -q app-test)
+          
+          # Wait for tests to complete
+          docker wait $container_id
+          
+          # Get exit code
+          EXIT_CODE=$(docker inspect $container_id -f '{{.State.ExitCode}}')
+          
+          # Create directory for test results with proper permissions
+          sudo mkdir -p target/surefire-reports
+          sudo chown -R $USER:$USER target
+          
+          # Copy test results from container
+          docker cp $container_id:/app/target/surefire-reports/. ./target/surefire-reports/
+          
+          # Stop containers
+          docker-compose -f docker-compose.test.yml down
+          
           if [ "$EXIT_CODE" != "0" ]; then
-            echo "Tests failed"
+            echo "Tests failed with exit code $EXIT_CODE"
             exit 1
           fi
+
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: |
+            target/surefire-reports/**/*.xml
 
   deploy:
     needs: test
@@ -80,7 +111,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /home/jacob/pantrypilot-prod && docker-compose down && docker-compose up -d
+            cd /home/jacob/pantrypilot-prod && docker-compose down && docker-compose pull && docker-compose up -d
 
       - name: Deploy via SSH for dev branch
         if: github.ref == 'refs/heads/dev'
@@ -90,4 +121,4 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /home/jacob/pantrypilot-dev && docker-compose down && docker-compose up -d
+            cd /home/jacob/pantrypilot-dev && docker-compose down && docker-compose pull && docker-compose up -d

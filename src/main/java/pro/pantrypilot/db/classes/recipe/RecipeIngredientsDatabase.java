@@ -31,24 +31,4 @@ public class RecipeIngredientsDatabase {
             throw new RuntimeException(e);
         }
     }
-
-//    public static ArrayList<RecipeIngredient> getIngredientsForRecipe(int recipeID) {
-//        String getIngredientsSQL = "SELECT * FROM recipe_ingredients WHERE recipeID = " + recipeID + ";";
-//        ArrayList<RecipeIngredient> ingredients = new ArrayList<>();
-//        try (Statement statement = DatabaseConnectionManager.getConnection().createStatement();
-//             ResultSet resultSet = statement.executeQuery(getIngredientsSQL)) {
-//
-//            while (resultSet.next()) {
-//                int ingredientID = resultSet.getInt("ingredientID");
-//                int quantity = resultSet.getInt("quantity");
-//                String unit = resultSet.getString("unit");
-//
-//                RecipeIngredient ingredient = new RecipeIngredient(recipeID, ingredientID, quantity, unit);
-//                ingredients.add(ingredient);
-//            }
-//        } catch (SQLException e) {
-//            logger.error("Error retrieving ingredients for recipeID: " + recipeID, e);
-//        }
-//        return ingredients;
-//    }
 }
