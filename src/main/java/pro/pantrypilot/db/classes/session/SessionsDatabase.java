@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.pantrypilot.db.DatabaseConnectionManager;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,13 +53,13 @@ public class SessionsDatabase {
 
     public static Session createSession(Session session) {
         String sessionID = UUID.randomUUID().toString();
-        String createSessionSQL = "INSERT INTO sessions (sessionID, userID, ipAddress) VALUES ('"
-                + sessionID + "', '"
-                + session.getUserID() + "', '"
-                + session.getIpAddress() + "');";
-        try {
-            Statement statement = DatabaseConnectionManager.getConnection().createStatement();
-            int rowsAffected = statement.executeUpdate(createSessionSQL);
+        String createSessionSQL = "INSERT INTO sessions (sessionID, userID, ipAddress) VALUES (?, ?, ?)";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(createSessionSQL)) {
+            preparedStatement.setString(1, sessionID);
+            preparedStatement.setString(2, session.getUserID());
+            preparedStatement.setString(3, session.getIpAddress());
+            
+            int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
                 return getSession(sessionID);
@@ -77,14 +78,16 @@ public class SessionsDatabase {
      * @return A Session object if found; otherwise, null.
      */
     public static Session getSession(String sessionID) {
-        String getSessionSQL = "SELECT * FROM sessions WHERE sessionID = '" + sessionID + "';";
-        try (Statement statement = DatabaseConnectionManager.getConnection().createStatement();
-             ResultSet resultSet = statement.executeQuery(getSessionSQL)) {
-
-            if (resultSet.next()) {  // Move cursor to the first row
-                return new Session(resultSet);
-            } else {
-                return null; // No session found with the given sessionID
+        String getSessionSQL = "SELECT * FROM sessions WHERE sessionID = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(getSessionSQL)) {
+            preparedStatement.setString(1, sessionID);
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {  // Move cursor to the first row
+                    return new Session(resultSet);
+                } else {
+                    return null; // No session found with the given sessionID
+                }
             }
         } catch (SQLException e) {
             logger.error("Error retrieving session", e);
@@ -101,11 +104,11 @@ public class SessionsDatabase {
      * @return true if the update was successful; false otherwise.
      */
     public static boolean updateLastUsed(String sessionID) {
-        String updateSQL = "UPDATE sessions SET lastUsed = CURRENT_TIMESTAMP WHERE sessionID = '" + sessionID + "';";
-        try {
-            int rowsAffected = DatabaseConnectionManager.getConnection()
-                    .createStatement()
-                    .executeUpdate(updateSQL);
+        String updateSQL = "UPDATE sessions SET lastUsed = CURRENT_TIMESTAMP WHERE sessionID = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(updateSQL)) {
+            preparedStatement.setString(1, sessionID);
+            
+            int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
             logger.error("Error updating lastUsed timestamp", e);
@@ -122,11 +125,11 @@ public class SessionsDatabase {
      * @return true if the deletion was successful; false otherwise.
      */
     public static boolean deleteSession(String sessionID) {
-        String deleteSQL = "DELETE FROM sessions WHERE sessionID = '" + sessionID + "';";
-        try {
-            int rowsAffected = DatabaseConnectionManager.getConnection()
-                    .createStatement()
-                    .executeUpdate(deleteSQL);
+        String deleteSQL = "DELETE FROM sessions WHERE sessionID = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(deleteSQL)) {
+            preparedStatement.setString(1, sessionID);
+            
+            int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
             logger.error("Error deleting session", e);

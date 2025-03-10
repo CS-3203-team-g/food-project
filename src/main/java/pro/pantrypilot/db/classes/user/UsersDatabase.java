@@ -35,15 +35,14 @@ public class UsersDatabase {
     }
 
     public static boolean createUser(User user) {
-        String createUserSQL = "INSERT INTO users (username, email, passwordHash, salt) VALUES ('"
-                + user.getUsername() + "', '"
-                + user.getEmail() + "', '"
-                + user.getPasswordHash() + "', '"
-                + user.getSalt() + "');";
-        try {
-            int rowsAffected = DatabaseConnectionManager.getConnection()
-                    .createStatement()
-                    .executeUpdate(createUserSQL);
+        String createUserSQL = "INSERT INTO users (username, email, passwordHash, salt) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(createUserSQL)) {
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getEmail());
+            preparedStatement.setString(3, user.getPasswordHash());
+            preparedStatement.setString(4, user.getSalt());
+            
+            int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0; // Returns true if a row was inserted
         } catch (SQLException e) {
             logger.error("Error creating user", e);
@@ -53,14 +52,16 @@ public class UsersDatabase {
 
 
     public static User getUser(String username) {
-        String getUserSQL = "SELECT * FROM users WHERE username = '" + username + "';";
-        try (Statement statement = DatabaseConnectionManager.getConnection().createStatement();
-             ResultSet resultSet = statement.executeQuery(getUserSQL)) {
-
-            if (resultSet.next()) {  // Move cursor to the first row
-                return new User(resultSet);
-            } else {
-                return null; // No user found with the given username
+        String getUserSQL = "SELECT * FROM users WHERE username = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(getUserSQL)) {
+            preparedStatement.setString(1, username);
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {  // Move cursor to the first row
+                    return new User(resultSet);
+                } else {
+                    return null; // No user found with the given username
+                }
             }
         } catch (SQLException e) {
             logger.error("Error retrieving user", e);
