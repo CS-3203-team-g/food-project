@@ -10,10 +10,7 @@
             rel="stylesheet"
     />
     <style>
-        /* Custom styling */
-        body {
-            background-color: red;
-        }
+        /* Custom hero section styling */
         .hero-section {
             background-color: #0d6efd; /* Bootstrap primary blue */
             color: #fff;
@@ -49,6 +46,7 @@
                     <a class="nav-link" href="/lists">Lists</a>
                 </li>
             </ul>
+            <!-- Login Button (will be replaced if a user is logged in) -->
             <a id="loginBtn" href="login" class="btn btn-primary ms-3">Login</a>
         </div>
     </div>
@@ -64,5 +62,130 @@
         <a href="#getting-started" class="btn btn-light btn-lg mt-3">Get Started</a>
     </div>
 </header>
+
+<!-- Overview Section -->
+<section id="overview" class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Overview</h2>
+        <p>
+            Pantry Pilot is a web-based application that automatically creates grocery lists tailored to your daily needs and preferences. Our platform simplifies the grocery shopping process while emphasizing high code quality through comprehensive unit testing with Maven.
+        </p>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Features</h2>
+        <div class="row">
+            <!-- Feature 1: Grocery List Generator -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Automatic Grocery List Generator</h5>
+                        <p class="card-text">
+                            Get automatically generated grocery lists tailored to your daily needs and preferences.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Feature 2: Recipe Recommendations -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Targeted Recipe Recommendations</h5>
+                        <p class="card-text">
+                            Receive customized recipe recommendations based on leftover ingredients and favorites.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Getting Started Section -->
+<section id="getting-started" class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Getting Started</h2>
+        <p>
+            Pantry Pilot is launching as a website, so no installation is necessary. Simply visit <strong>PantryPilot.pro</strong> to create an account or login.
+            Use our quick start tool to input your grocery needs, weekly budget, and any leftover ingredients for recipe recommendations.
+        </p>
+        <h5>How It Works:</h5>
+        <ol>
+            <li>
+                <strong>Access Custom Grocery Lists:</strong> After entering your grocery needs, view and edit your automatically generated lists.
+            </li>
+            <li>
+                <strong>Input Leftover Ingredients:</strong> Add any ingredients you already have into the Recipe Manager.
+            </li>
+            <li>
+                <strong>Get Recipe Recommendations:</strong> Click the <em>"Get Recipes"</em> button to receive personalized recipes.
+            </li>
+            <li>
+                <strong>Share Personalized Recipes:</strong> Browse, select, and share your favorite recipes with others.
+            </li>
+        </ol>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-4">
+    <div class="container text-center">
+        <p class="mb-0">
+            &copy; 2025 Pantry Pilot. All rights reserved. Licensed under the MIT License.
+        </p>
+    </div>
+</footer>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom Script for Login/Logout Logic -->
+<script>
+    // Helper function to get a cookie's value by name
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === " ") c = c.substring(1);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Check if the user is logged in by looking for the "username" cookie
+        const username = getCookie("username");
+        if (username) {
+            // Replace the login button with a dropdown showing the username
+            const loginBtn = document.getElementById("loginBtn");
+            if (loginBtn) {
+                const dropdownDiv = document.createElement("div");
+                dropdownDiv.className = "dropdown ms-3";
+                dropdownDiv.innerHTML =
+                    '<button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">' +
+                    username +
+                    '</button>' +
+                    '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">' +
+                    '<li><a class="dropdown-item" href="/settings">Settings</a></li>' +
+                    '<li><a class="dropdown-item" href="#" id="logoutBtn">Sign Out</a></li>' +
+                    "</ul>";
+                loginBtn.parentNode.replaceChild(dropdownDiv, loginBtn);
+
+                // Add event listener for the sign out button
+                document.getElementById("logoutBtn").addEventListener("click", function (e) {
+                    e.preventDefault();
+                    // Remove the cookies by setting their expiration dates to the past
+                    document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "sessionID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    // Reload the page
+                    location.reload();
+                });
+            }
+        }
+    });
+</script>
 </body>
 </html>
