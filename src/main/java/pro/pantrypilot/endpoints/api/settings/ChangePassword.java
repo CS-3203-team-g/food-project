@@ -76,18 +76,18 @@ public class ChangePassword implements HttpHandler {
             return;
         }
 
-        // Verify the current password
-        if (!PasswordHasher.verifyPassword(changePasswordRequest.currentPassword, user.getSalt(), user.getPasswordHash())) {
+        // Verify the current password using BCrypt
+        if (!PasswordHasher.verifyPassword(changePasswordRequest.currentPassword, user.getPasswordHash())) {
             logger.debug("Invalid current password for user: {}", user.getUsername());
             sendResponse(exchange, 401, "{\"message\": \"Invalid username or password\"}");
             return;
         }
 
-        // Hash the new password
-        PasswordHasher.Password newPassword = PasswordHasher.generatePassword(changePasswordRequest.username, changePasswordRequest.newPassword);
+        // Hash the new password with BCrypt
+        PasswordHasher.Password newPassword = PasswordHasher.generatePassword(changePasswordRequest.newPassword);
 
         // Update the user's password in the database
-        boolean updateSuccess = UsersDatabase.updateUserPassword(user.getUserID(), newPassword.getHash(), newPassword.getSalt());
+        boolean updateSuccess = UsersDatabase.updateUserPassword(user.getUserID(), newPassword.getHashedValue());
 
         if (!updateSuccess) {
             logger.error("Error updating password for user: {}", user.getUsername());

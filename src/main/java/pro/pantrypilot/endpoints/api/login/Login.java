@@ -71,16 +71,14 @@ public class Login implements HttpHandler {
             return;
         }
 
-        // Verify the password
-        if (!PasswordHasher.verifyPassword(loginRequest.password, user.getSalt(), user.getPasswordHash())) {
+        // Verify the password using BCrypt
+        if (!PasswordHasher.verifyPassword(loginRequest.password, user.getPasswordHash())) {
             sendResponse(exchange, 401, "{\"message\": \"Invalid username or password\"}");
             return;
         }
 
         Session session = new Session(user.getUserID(), exchange.getRemoteAddress().getAddress().getHostAddress());
         session = SessionsDatabase.createSession(session);
-
-//        System.out.println("S ID:" + session.getSessionID());
 
         if(session == null || session.getSessionID() == null) {
             logger.error("Error creating session for user: {}", user.getUsername());

@@ -12,7 +12,6 @@ public class User {
     private String username;
     private String email;
     private String passwordHash;
-    private String salt;
     private Timestamp createdAt;
     private Timestamp lastLogin;
     private boolean isActive;
@@ -23,9 +22,9 @@ public class User {
         this.username = username;
         this.email = email;
 
-        PasswordHasher.Password password = PasswordHasher.generatePassword(username, plaintextPassword);
-        this.passwordHash = password.getHash();
-        this.salt = password.getSalt();
+        // BCrypt stores salt as part of the hash
+        PasswordHasher.Password password = PasswordHasher.generatePassword(plaintextPassword);
+        this.passwordHash = password.getHashedValue();
 
         this.isActive = true; // Default value
         this.createdAt = new Timestamp(System.currentTimeMillis()); // Set current timestamp
@@ -50,7 +49,6 @@ public class User {
             this.username = resultSet.getString("username");
             this.email = resultSet.getString("email");
             this.passwordHash = resultSet.getString("passwordHash");
-            this.salt = resultSet.getString("salt");
             this.createdAt = resultSet.getTimestamp("createdAt");
             this.lastLogin = resultSet.getTimestamp("lastLogin");
             this.isActive = resultSet.getBoolean("isActive");
@@ -59,7 +57,6 @@ public class User {
             throw new RuntimeException("Error constructing User from ResultSet", e);
         }
     }
-
 
     // Getters and Setters
     public String getUserID() {
@@ -133,13 +130,5 @@ public class User {
                 ", lastLogin=" + lastLogin +
                 ", isActive=" + isActive +
                 '}';
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 }
