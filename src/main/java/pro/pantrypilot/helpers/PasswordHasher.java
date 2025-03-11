@@ -31,11 +31,10 @@ public class PasswordHasher {
      * @param plaintextPassword The password to hash
      * @return Password object containing the BCrypt hashed password (with the salt embedded)
      */
-    public static Password generatePassword(String plaintextPassword) {
+    public static String generatePassword(String plaintextPassword) {
         try {
             // BCrypt automatically generates a secure random salt and incorporates it into the hash
-            String hashedPassword = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_COST));
-            return new Password(hashedPassword);
+            return BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_COST));
         } catch (Exception e) {
             logger.error("Error generating password hash with BCrypt", e);
             throw new RuntimeException("Error generating password hash", e);

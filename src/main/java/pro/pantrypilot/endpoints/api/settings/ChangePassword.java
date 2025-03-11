@@ -101,10 +101,10 @@ public class ChangePassword implements HttpHandler {
         }
 
         // Hash the new password with BCrypt
-        PasswordHasher.Password newPassword = PasswordHasher.generatePassword(changePasswordRequest.newPassword);
+        String newPassword = PasswordHasher.generatePassword(changePasswordRequest.newPassword);
 
         // Update the user's password in the database
-        boolean updateSuccess = UsersDatabase.updateUserPassword(user.getUserID(), newPassword.getHashedValue());
+        boolean updateSuccess = UsersDatabase.updateUserPassword(user.getUserID(), newPassword);
 
         if (!updateSuccess) {
             logger.error("Error updating password for user: {}", user.getUsername());

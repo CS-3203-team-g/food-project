@@ -23,8 +23,7 @@ public class User {
         this.email = email;
 
         // BCrypt stores salt as part of the hash
-        PasswordHasher.Password password = PasswordHasher.generatePassword(plaintextPassword);
-        this.passwordHash = password.getHashedValue();
+        this.passwordHash = PasswordHasher.generatePassword(plaintextPassword);
 
         this.isActive = true; // Default value
         this.createdAt = new Timestamp(System.currentTimeMillis()); // Set current timestamp
@@ -109,15 +108,6 @@ public class User {
 
     public boolean isActive() {
         return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    // Method to update last login timestamp
-    public void updateLastLogin() {
-        this.lastLogin = new Timestamp(System.currentTimeMillis());
     }
 
     @Override
