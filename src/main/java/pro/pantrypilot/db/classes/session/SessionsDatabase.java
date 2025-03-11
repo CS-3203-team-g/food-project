@@ -9,10 +9,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SessionsDatabase {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionsDatabase.class);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final long EXPIRATION_DAYS = 14;
+
+    static {
+        // Schedule session cleanup to run every hour
+        scheduler.scheduleAtFixedRate(SessionsDatabase::deleteExpiredSessions, 1, 1, TimeUnit.HOURS);
+    }
 
     /**
      * Initializes the sessions table in the database.
@@ -134,6 +144,21 @@ public class SessionsDatabase {
         } catch (SQLException e) {
             logger.error("Error deleting session", e);
             return false;
+        }
+    }
+
+    /**
+     * Deletes sessions that have been inactive for more than EXPIRATION_DAYS days
+     */
+    public static void deleteExpiredSessions() {
+        String deleteSQL = "DELETE FROM sessions WHERE lastUsed < DATE_SUB(NOW(), INTERVAL " + EXPIRATION_DAYS + " DAY)";
+        try (Statement stmt = DatabaseConnectionManager.getConnection().createStatement()) {
+            int rowsAffected = stmt.executeUpdate(deleteSQL);
+            if (rowsAffected > 0) {
+                logger.info("Deleted {} expired sessions", rowsAffected);
+            }
+        } catch (SQLException e) {
+            logger.error("Error deleting expired sessions", e);
         }
     }
 }

@@ -125,4 +125,26 @@ class SessionsDatabaseTest {
         boolean deleted = SessionsDatabase.deleteSession(nonExistentSessionId);
         assertFalse(deleted, "Deleting non-existent session should return false");
     }
+
+    @Test
+    void testDeleteExpiredSessions() throws Exception {
+        // Create a session
+        Session newSession = new Session("test-user-id", "127.0.0.1");
+        Session createdSession = SessionsDatabase.createSession(newSession);
+        assertNotNull(createdSession);
+
+        // Manually update the lastUsed timestamp to be older than expiration
+        String updateSQL = "UPDATE sessions SET lastUsed = DATE_SUB(NOW(), INTERVAL 15 DAY) WHERE sessionID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(updateSQL)) {
+            pstmt.setString(1, createdSession.getSessionID());
+            pstmt.executeUpdate();
+        }
+
+        // Run expiration
+        SessionsDatabase.deleteExpiredSessions();
+
+        // Verify session was deleted
+        Session retrievedSession = SessionsDatabase.getSession(createdSession.getSessionID());
+        assertNull(retrievedSession, "Expired session should be deleted");
+    }
 }
