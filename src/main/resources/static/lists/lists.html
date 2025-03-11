@@ -40,10 +40,11 @@
             return null;
         }
 
-        // Check for sessionID before the page loads
+        // Check for authentication before the page loads
+        // We check for username instead of sessionID because sessionID is HttpOnly
         document.addEventListener("DOMContentLoaded", function () {
-            const sessionID = getCookie("sessionID");
-            if (!sessionID) {
+            const username = getCookie("username");
+            if (!username) {
                 window.location.href = "/login?redirect=/lists";
             }
         });
@@ -117,12 +118,15 @@
 <script>
     document.addEventListener("DOMContentLoaded", async function () {
         try {
+            // We don't need to send the sessionID explicitly anymore
+            // The server will extract it from the HttpOnly cookie
             const response = await fetch('/api/getShoppingLists', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ sessionID: getCookie('sessionID') })
+                // Send an empty JSON object or omit the body
+                body: JSON.stringify({})
             });
             if (!response.ok) {
                 throw new Error('Failed to fetch shopping lists');
@@ -177,7 +181,6 @@
 
     document.getElementById('submitListBtn').addEventListener('click', async function() {
         const listName = document.getElementById('newListName').value.trim();
-        const sessionID = getCookie('sessionID');
 
         if (!listName) {
             alert('Please enter a list name.');
@@ -185,12 +188,13 @@
         }
 
         try {
+            // We don't need to send the sessionID explicitly anymore
             const response = await fetch('/api/createShoppingList', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ sessionID, listName })
+                body: JSON.stringify({ listName })
             });
 
             if (response.ok) {

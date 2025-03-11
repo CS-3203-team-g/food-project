@@ -121,8 +121,6 @@
         return null;
     }
 
-    const sessionID = getCookie('sessionID');
-
     function getListID() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('id');
@@ -137,6 +135,7 @@
         }
 
         try {
+            // The server now gets the sessionID from the cookie automatically
             const response = await fetch(`/api/getShoppingListWithIngredients?id=${listID}`);
             if (response.status === 404) {
                 const listDetails = document.getElementById('listDetails');
@@ -188,10 +187,10 @@
                     const quantity = this.getAttribute('data-quantity');
                     const unit = this.getAttribute('data-unit');
                     const listID = getListID();
-                    const sessionID = getCookie('sessionID');
 
                     if (confirm('Are you sure you want to delete this ingredient?')) {
                         try {
+                            // We don't need to send sessionID explicitly anymore
                             const response = await fetch('/api/removeIngredientFromShoppingList', {
                                 method: 'POST',
                                 headers: {
@@ -201,8 +200,7 @@
                                     shoppingListID: listID,
                                     ingredientID: ingredientID,
                                     quantity: quantity,
-                                    unit: unit,
-                                    sessionID: sessionID
+                                    unit: unit
                                 })
                             });
 
@@ -261,6 +259,7 @@
         }
 
         try {
+            // We don't need to send sessionID explicitly anymore
             const response = await fetch('/api/addIngredientToShoppingList', {
                 method: 'POST',
                 headers: {
@@ -270,8 +269,7 @@
                     shoppingListID: listID,
                     ingredientID: itemName,
                     quantity: itemQuantity,
-                    unit: itemUnit,
-                    sessionID: sessionID
+                    unit: itemUnit
                 })
             });
 

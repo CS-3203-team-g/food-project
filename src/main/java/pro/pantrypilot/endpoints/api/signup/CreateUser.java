@@ -79,7 +79,7 @@ public class CreateUser implements HttpHandler {
         }
 
         // Check if username already exists
-        User existingUser = UsersDatabase.getUser(signupRequest.username);
+        User existingUser = UsersDatabase.getUserByUsername(signupRequest.username);
         if (existingUser != null) {
             sendResponse(exchange, 409, "{\"message\": \"Username already exists\"}");
             return;
@@ -103,7 +103,7 @@ public class CreateUser implements HttpHandler {
         }
 
         // Create a session for the new user
-        User createdUser = UsersDatabase.getUser(signupRequest.username);
+        User createdUser = UsersDatabase.getUserByUsername(signupRequest.username);
         Session session = new Session(createdUser.getUserID(), exchange.getRemoteAddress().getAddress().getHostAddress());
         session = SessionsDatabase.createSession(session);
 

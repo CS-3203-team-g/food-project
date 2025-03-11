@@ -58,7 +58,7 @@ public class Login implements HttpHandler {
         }
 
         // Retrieve the user from the database
-        User user = UsersDatabase.getUser(loginRequest.username);
+        User user = UsersDatabase.getUserByUsername(loginRequest.username);
 
         if (user == null) {
             logger.debug("User not found: {}", loginRequest.username);
@@ -78,7 +78,7 @@ public class Login implements HttpHandler {
             return;
         }
 
-        Session session = new Session(user.getUserID(), exchange.getRemoteAddress().getAddress().getHostAddress());
+        Session session = new Session(user.getUserID(), getClientIpAddress(exchange));
         session = SessionsDatabase.createSession(session);
 
         if(session == null || session.getSessionID() == null) {
@@ -89,6 +89,7 @@ public class Login implements HttpHandler {
 
         // Update session's last used time
         SessionsDatabase.updateLastUsed(session.getSessionID());
+        UsersDatabase.updateUserLastLogin(user);
 
         // Set cookies securely using HTTP headers - this will be handled by the browser
         // Set sessionID cookie with HttpOnly flag
@@ -110,5 +111,16 @@ public class Login implements HttpHandler {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(responseBytes);
         }
+    }
+
+    private String getClientIpAddress(HttpExchange exchange) {
+        // Try to get IP from X-Forwarded-For header first
+        String ip = exchange.getRequestHeaders().getFirst("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty()) {
+            // X-Forwarded-For may contain multiple IPs; get the first one
+            return ip.split(",")[0].trim();
+        }
+        // Fallback to remote address if X-Forwarded-For is not present
+        return exchange.getRemoteAddress().getAddress().getHostAddress();
     }
 }

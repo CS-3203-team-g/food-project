@@ -64,20 +64,15 @@
     }
 
     document.addEventListener("DOMContentLoaded", async function() {
-        const sessionID = getCookie("sessionID");
         
         try {
-            // Only call the API if we have a sessionID to invalidate
-            if (sessionID) {
-                // Call the logout API to invalidate the session on the server
-                await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ sessionID })
-                });
-            }
+            // Call the logout API to invalidate the session on the server
+            await fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
         } catch (error) {
             console.error("Error during logout API call:", error);
             // Continue with logout process even if API call fails

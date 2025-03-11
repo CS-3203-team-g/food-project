@@ -7,7 +7,6 @@ import pro.pantrypilot.db.DatabaseConnectionManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class UsersDatabase {
 
@@ -65,11 +64,29 @@ public class UsersDatabase {
         }
     }
 
-    public static User getUser(String username) {
+    public static User getUserByUsername(String username) {
         String getUserSQL = "SELECT * FROM users WHERE username = ?";
         try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(getUserSQL)) {
             preparedStatement.setString(1, username);
             
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {  // Move cursor to the first row
+                    return new User(resultSet);
+                } else {
+                    return null; // No user found with the given username
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving user", e);
+            return null;
+        }
+    }
+
+    public static User getUserByUserId(String username) {
+        String getUserSQL = "SELECT * FROM users WHERE userID = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(getUserSQL)) {
+            preparedStatement.setString(1, username);
+
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {  // Move cursor to the first row
                     return new User(resultSet);
@@ -95,5 +112,19 @@ public class UsersDatabase {
             logger.error("Error updating password for userID: " + userID, e);
             return false; // Returns false if an exception occurred
         }
+    }
+
+    public static void updateUserLastLogin(String userID) {
+        String updateLastLoginSQL = "UPDATE users SET lastLogin = CURRENT_TIMESTAMP WHERE userID = ?";
+        try (PreparedStatement preparedStatement = DatabaseConnectionManager.getConnection().prepareStatement(updateLastLoginSQL)) {
+            preparedStatement.setString(1, userID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Error updating last login for userID: " + userID, e);
+        }
+    }
+
+    public static void updateUserLastLogin(User user) {
+        updateUserLastLogin(user.getUserID());
     }
 }
