@@ -7,49 +7,38 @@ public class PasswordHasherTest {
 
     @Test
     public void testPasswordGeneration() {
-        String username = "testuser";
         String password = "testpassword123";
 
-        PasswordHasher.Password hashedPassword = PasswordHasher.generatePassword(username, password);
+        PasswordHasher.Password hashedPassword = PasswordHasher.generatePassword(password);
 
         assertNotNull(hashedPassword);
-        assertNotNull(hashedPassword.getHash());
-        assertNotNull(hashedPassword.getSalt());
-        assertFalse(hashedPassword.getHash().isEmpty());
-        assertFalse(hashedPassword.getSalt().isEmpty());
+        assertNotNull(hashedPassword.getHashedValue());
+        assertFalse(hashedPassword.getHashedValue().isEmpty());
+        // BCrypt hashes should start with $2a$ or $2b$
+        assertTrue(hashedPassword.getHashedValue().startsWith("$2a$") 
+                || hashedPassword.getHashedValue().startsWith("$2b$"));
     }
 
     @Test
     public void testPasswordVerification() {
-        String username = "testuser";
         String correctPassword = "testpassword123";
         String wrongPassword = "wrongpassword123";
 
-        PasswordHasher.Password hashedPassword = PasswordHasher.generatePassword(username, correctPassword);
+        PasswordHasher.Password hashedPassword = PasswordHasher.generatePassword(correctPassword);
+        String storedHash = hashedPassword.getHashedValue();
 
-        assertTrue(PasswordHasher.verifyPassword(
-            correctPassword, 
-            hashedPassword.getSalt(), 
-            hashedPassword.getHash()
-        ));
-
-        assertFalse(PasswordHasher.verifyPassword(
-            wrongPassword, 
-            hashedPassword.getSalt(), 
-            hashedPassword.getHash()
-        ));
+        assertTrue(PasswordHasher.verifyPassword(correctPassword, storedHash));
+        assertFalse(PasswordHasher.verifyPassword(wrongPassword, storedHash));
     }
 
     @Test
-    public void testSamePasswordDifferentSalts() {
+    public void testSamePasswordDifferentHashes() {
         String password = "testpassword123";
-        String username1 = "user1";
-        String username2 = "user2";
 
-        PasswordHasher.Password hashedPassword1 = PasswordHasher.generatePassword(username1, password);
-        PasswordHasher.Password hashedPassword2 = PasswordHasher.generatePassword(username2, password);
+        PasswordHasher.Password hashedPassword1 = PasswordHasher.generatePassword(password);
+        PasswordHasher.Password hashedPassword2 = PasswordHasher.generatePassword(password);
 
-        assertNotEquals(hashedPassword1.getHash(), hashedPassword2.getHash());
-        assertNotEquals(hashedPassword1.getSalt(), hashedPassword2.getSalt());
+        // With BCrypt, even the same password should produce different hashes due to different salts
+        assertNotEquals(hashedPassword1.getHashedValue(), hashedPassword2.getHashedValue());
     }
 }
