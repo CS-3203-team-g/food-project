@@ -76,6 +76,9 @@ public class ChangePassword implements HttpHandler {
             return;
         }
 
+        // Update session activity
+        SessionsDatabase.updateLastUsed(changePasswordRequest.sessionID);
+
         // Verify the current password using BCrypt
         if (!PasswordHasher.verifyPassword(changePasswordRequest.currentPassword, user.getPasswordHash())) {
             logger.debug("Invalid current password for user: {}", user.getUsername());

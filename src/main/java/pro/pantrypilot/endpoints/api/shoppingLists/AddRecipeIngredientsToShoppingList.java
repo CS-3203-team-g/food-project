@@ -47,6 +47,9 @@ public class AddRecipeIngredientsToShoppingList implements HttpHandler {
             return;
         }
 
+        // Update session activity
+        SessionsDatabase.updateLastUsed(addIngredientRequest.sessionID);
+
         // Check if the user owns the shopping list
         ShoppingList shoppingList = ShoppingListsDatabase.getShoppingListWithoutIngredients(addIngredientRequest.shoppingListID);
         if (shoppingList == null) {

@@ -46,6 +46,9 @@ public class RemoveIngredientFromShoppingList implements HttpHandler {
             return;
         }
 
+        // Update session activity
+        SessionsDatabase.updateLastUsed(removeIngredientRequest.sessionID);
+
         // Check if the user owns the shopping list
         ShoppingList shoppingList = ShoppingListsDatabase.getShoppingListWithIngredients(removeIngredientRequest.shoppingListID);
         if (shoppingList == null) {

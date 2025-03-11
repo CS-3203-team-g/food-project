@@ -86,6 +86,9 @@ public class Login implements HttpHandler {
             return;
         }
 
+        // Update session's last used time
+        SessionsDatabase.updateLastUsed(session.getSessionID());
+
         // Login successful
         sendResponse(exchange, 200, "{\"message\": \"Login successful\",\"sessionID\": \"" + session.getSessionID() + "\"}");
     }

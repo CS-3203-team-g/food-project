@@ -46,6 +46,9 @@ public class GetShoppingLists implements HttpHandler {
             return;
         }
 
+        // Update session activity
+        SessionsDatabase.updateLastUsed(sessionID);
+
         String userID = session.getUserID();
 
         // Fetch shopping lists for the user
