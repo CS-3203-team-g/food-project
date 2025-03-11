@@ -73,6 +73,7 @@ public class Login implements HttpHandler {
 
         // Verify the password using BCrypt
         if (!PasswordHasher.verifyPassword(loginRequest.password, user.getPasswordHash())) {
+            logger.debug("Invalid password for user: {}", loginRequest.username);
             sendResponse(exchange, 401, "{\"message\": \"Invalid username or password\"}");
             return;
         }
@@ -89,10 +90,18 @@ public class Login implements HttpHandler {
         // Update session's last used time
         SessionsDatabase.updateLastUsed(session.getSessionID());
 
-        // Login successful
+        // Set cookies securely using HTTP headers - this will be handled by the browser
+        // Set sessionID cookie with HttpOnly flag
+        exchange.getResponseHeaders().add("Set-Cookie", 
+            String.format("sessionID=%s; Path=/; Secure; HttpOnly; SameSite=Strict", session.getSessionID()));
+        
+        // Set username cookie without HttpOnly to allow frontend access
+        exchange.getResponseHeaders().add("Set-Cookie", 
+            String.format("username=%s; Path=/; Secure; SameSite=Strict", loginRequest.username));
+
+        // Login successful - still send a response for the client to process
         sendResponse(exchange, 200, "{\"message\": \"Login successful\",\"sessionID\": \"" + session.getSessionID() + "\"}");
     }
-
 
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");

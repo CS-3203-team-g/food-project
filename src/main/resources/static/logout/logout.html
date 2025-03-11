@@ -82,10 +82,7 @@
             console.error("Error during logout API call:", error);
             // Continue with logout process even if API call fails
         } finally {
-            // Always remove cookies client-side
-            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie = "sessionID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            
+            // Server will handle clearing cookies via Set-Cookie headers
             // Wait a moment to show the logout screen, then redirect to home
             setTimeout(() => {
                 window.location.href = "/";

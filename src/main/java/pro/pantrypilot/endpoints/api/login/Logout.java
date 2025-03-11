@@ -67,6 +67,12 @@ public class Logout implements HttpHandler {
             return;
         }
 
+        // Set expired cookies to clear them on the client side
+        exchange.getResponseHeaders().add("Set-Cookie", 
+            "sessionID=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict");
+        exchange.getResponseHeaders().add("Set-Cookie", 
+            "username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict");
+
         // Return success response
         sendResponse(exchange, 200, "{\"message\": \"Logout successful\"}");
     }
