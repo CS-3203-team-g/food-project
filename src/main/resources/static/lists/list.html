@@ -69,6 +69,8 @@
                     <a class="nav-link active" aria-current="page" href="/lists">Lists</a>
                 </li>
             </ul>
+            <!-- Login Button (will be replaced if a user is logged in) -->
+            <a id="loginBtn" href="login" class="btn btn-primary ms-3">Login</a>
         </div>
     </div>
 </nav>
@@ -287,6 +289,29 @@
         // Clear the input fields
         document.getElementById('newItemQuantity').value = '';
         document.getElementById('newItemUnit').value = '';
+    });
+    
+    // Add login/logout functionality
+    document.addEventListener("DOMContentLoaded", function () {
+        // Check if the user is logged in by looking for the "username" cookie
+        const username = getCookie("username");
+        if (username) {
+            // Replace the login button with a dropdown showing the username
+            const loginBtn = document.getElementById("loginBtn");
+            if (loginBtn) {
+                const dropdownDiv = document.createElement("div");
+                dropdownDiv.className = "dropdown ms-3";
+                dropdownDiv.innerHTML =
+                    '<button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">' +
+                    username +
+                    '</button>' +
+                    '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">' +
+                    '<li><a class="dropdown-item" href="/settings">Settings</a></li>' +
+                    '<li><a class="dropdown-item" href="/logout">Sign Out</a></li>' +
+                    "</ul>";
+                loginBtn.parentNode.replaceChild(dropdownDiv, loginBtn);
+            }
+        }
     });
 </script>
 </body>
