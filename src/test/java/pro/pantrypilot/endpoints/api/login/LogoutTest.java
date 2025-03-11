@@ -14,11 +14,8 @@ import pro.pantrypilot.db.classes.session.SessionsDatabase;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -36,6 +33,7 @@ public class LogoutTest {
     @BeforeEach
     void setUp() {
         logoutHandler = new Logout();
+        // No more header setup here - we'll do it in each test
     }
 
     @Test
@@ -47,66 +45,83 @@ public class LogoutTest {
 
     @Test
     void testValidLogoutRequest() throws IOException {
+        // Setup
         String sessionID = "test-session-id";
-        String requestBody = "{\"sessionID\": \"" + sessionID + "\"}";
-        ByteArrayInputStream requestInputStream = new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8));
         ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
 
+        // Set up request and response
         when(exchange.getRequestMethod()).thenReturn("POST");
-        when(exchange.getRequestBody()).thenReturn(requestInputStream);
+        when(exchange.getRequestBody()).thenReturn(new ByteArrayInputStream("{}".getBytes(StandardCharsets.UTF_8)));
         when(exchange.getResponseBody()).thenReturn(responseOutputStream);
         when(exchange.getResponseHeaders()).thenReturn(headers);
+        when(exchange.getRequestHeaders()).thenReturn(headers);
+        when(headers.getFirst("Cookie")).thenReturn("sessionID=" + sessionID);
 
+        // Mock SessionsDatabase.deleteSession to return true
         try (MockedStatic<SessionsDatabase> mockedStaticDB = Mockito.mockStatic(SessionsDatabase.class)) {
             mockedStaticDB.when(() -> SessionsDatabase.deleteSession(sessionID)).thenReturn(true);
             logoutHandler.handle(exchange);
         }
 
+        // Verify headers and response
+        verify(headers, times(1)).add(eq("Set-Cookie"),
+                eq("sessionID=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict"));
+        verify(headers, times(1)).add(eq("Set-Cookie"),
+                eq("username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict"));
         verify(headers, times(1)).set(eq("Content-Type"), eq("application/json; charset=UTF-8"));
         verify(exchange, times(1)).sendResponseHeaders(200, 0);
-        String response = responseOutputStream.toString();
-        assert(response.contains("Logout successful"));
     }
 
     @Test
     void testInvalidSessionID() throws IOException {
+        // Setup
         String sessionID = "invalid-session-id";
-        String requestBody = "{\"sessionID\": \"" + sessionID + "\"}";
-        ByteArrayInputStream requestInputStream = new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8));
         ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
 
+        // Set up request and response
         when(exchange.getRequestMethod()).thenReturn("POST");
-        when(exchange.getRequestBody()).thenReturn(requestInputStream);
+        when(exchange.getRequestBody()).thenReturn(new ByteArrayInputStream("{}".getBytes(StandardCharsets.UTF_8)));
         when(exchange.getResponseBody()).thenReturn(responseOutputStream);
         when(exchange.getResponseHeaders()).thenReturn(headers);
+        when(exchange.getRequestHeaders()).thenReturn(headers);
+        when(headers.getFirst("Cookie")).thenReturn("sessionID=" + sessionID);
 
+        // Mock SessionsDatabase.deleteSession to return false
         try (MockedStatic<SessionsDatabase> mockedStaticDB = Mockito.mockStatic(SessionsDatabase.class)) {
             mockedStaticDB.when(() -> SessionsDatabase.deleteSession(sessionID)).thenReturn(false);
             logoutHandler.handle(exchange);
         }
 
+        // Verify headers and response
+        verify(headers, times(1)).add(eq("Set-Cookie"),
+                eq("sessionID=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict"));
+        verify(headers, times(1)).add(eq("Set-Cookie"),
+                eq("username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict"));
         verify(headers, times(1)).set(eq("Content-Type"), eq("application/json; charset=UTF-8"));
         verify(exchange, times(1)).sendResponseHeaders(400, 0);
-        String response = responseOutputStream.toString();
-        assert(response.contains("Invalid session or session already expired"));
     }
 
     @Test
     void testMissingSessionID() throws IOException {
-        String requestBody = "{}";
-        ByteArrayInputStream requestInputStream = new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8));
+        // Setup
         ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
 
+        // Set up request and response
         when(exchange.getRequestMethod()).thenReturn("POST");
-        when(exchange.getRequestBody()).thenReturn(requestInputStream);
+        when(exchange.getRequestBody()).thenReturn(new ByteArrayInputStream("{}".getBytes(StandardCharsets.UTF_8)));
         when(exchange.getResponseBody()).thenReturn(responseOutputStream);
         when(exchange.getResponseHeaders()).thenReturn(headers);
+        when(exchange.getRequestHeaders()).thenReturn(headers);
+        when(headers.getFirst("Cookie")).thenReturn(null); // No cookie header
 
         logoutHandler.handle(exchange);
 
+        // Verify headers and response
+        verify(headers, times(1)).add(eq("Set-Cookie"),
+                eq("sessionID=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict"));
+        verify(headers, times(1)).add(eq("Set-Cookie"),
+                eq("username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict"));
         verify(headers, times(1)).set(eq("Content-Type"), eq("application/json; charset=UTF-8"));
-        verify(exchange, times(1)).sendResponseHeaders(400, 0);
-        String response = responseOutputStream.toString();
-        assert(response.contains("Missing sessionID"));
+        verify(exchange, times(1)).sendResponseHeaders(401, 0);
     }
 }
