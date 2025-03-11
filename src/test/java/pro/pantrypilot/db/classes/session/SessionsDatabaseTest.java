@@ -24,7 +24,7 @@ class SessionsDatabaseTest {
         connection = DatabaseConnectionManager.getConnection();
         
         // Generate a proper hashed password using PasswordHasher
-        PasswordHasher.Password testPassword = PasswordHasher.generatePassword("testpassword");
+        String testPassword = PasswordHasher.generatePassword("testpassword");
         
         // Create a test user since sessions need a valid user reference
         // Using PreparedStatement to avoid SQL injection and properly handle the BCrypt hash
@@ -33,7 +33,7 @@ class SessionsDatabaseTest {
             pstmt.setString(1, "test-user-id");
             pstmt.setString(2, "testuser");
             pstmt.setString(3, "test@example.com");
-            pstmt.setString(4, testPassword.getHashedValue());
+            pstmt.setString(4, testPassword);
             pstmt.executeUpdate();
         }
     }

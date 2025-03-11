@@ -88,11 +88,8 @@ public class CreateUser implements HttpHandler {
         // Since there's no direct getUserByEmail method, we'll need to create a User object
         // and trust the database constraints to enforce unique emails
         
-        // Hash the password using the correct method from PasswordHasher
-        String hashedPassword = PasswordHasher.generatePassword(signupRequest.password).getHashedValue();
-        
         // Create a new User object with the provided data
-        User newUser = new User(signupRequest.username, signupRequest.email, hashedPassword);
+        User newUser = new User(signupRequest.username, signupRequest.email, signupRequest.password);
         
         // Store the user in the database
         boolean success = UsersDatabase.createUser(newUser);
