@@ -157,4 +157,20 @@ public class RecipeDatabase {
         }
         return recipe;
     }
+
+    public static int getTotalRecipeCount() {
+        String sql = "SELECT COUNT(*) FROM recipes";
+        try {
+            Connection conn = getPersistentConnection();
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving total recipe count", e);
+        }
+        return 0;
+    }
 }

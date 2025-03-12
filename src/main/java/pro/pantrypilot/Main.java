@@ -58,6 +58,12 @@ public class Main {
         server.createContext("/api/addRecipeIngredientsToShoppingList", new pro.pantrypilot.endpoints.api.shoppingLists.AddRecipeIngredientsToShoppingList());
         server.createContext("/api/removeIngredientFromShoppingList", new pro.pantrypilot.endpoints.api.shoppingLists.RemoveIngredientFromShoppingList());
 
+//      Admin pages
+        server.createContext("/admin", new pro.pantrypilot.endpoints.pages.admin.Admin());
+        server.createContext("/api/admin/getTotalUsers", new pro.pantrypilot.endpoints.api.admin.GetTotalUsers());
+        server.createContext("/api/admin/getTotalRecipes", new pro.pantrypilot.endpoints.api.admin.GetTotalRecipes());
+        server.createContext("/api/admin/getActiveSessions", new pro.pantrypilot.endpoints.api.admin.GetActiveSessions());
+
 
         logger.info("Starting HttpServer");
         server.start();

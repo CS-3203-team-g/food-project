@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard - Pantry Pilot</title>
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <!-- Font Awesome for icons -->
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        rel="stylesheet"
+    />
+
+    <!-- JQuery  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+    <style>
+        /* Custom styling for the admin page */
+        .admin-section {
+            padding: 3rem 0;
+        }
+        /* Sidebar styling */
+        .sidebar {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.25rem;
+        }
+        .sidebar .nav-link {
+            color: #333;
+        }
+        .sidebar .nav-link:hover {
+            color: #0d6efd;
+        }
+        .sidebar .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        /* Stats card styling */
+        .stats-card {
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: scale(1.05);
+        }
+        /* Table styling */
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        footer {
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">Pantry Pilot</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recipes">Recipes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/lists">Lists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/admin">Admin</a>
+                    </li>
+                </ul>
+                <!-- Login Button (will be replaced if a user is logged in) -->
+                <a id="loginBtn" href="login" class="btn btn-primary ms-3">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <section class="admin-section">
+            <div class="container">
+                <div class="row">
+                    <!-- Sidebar -->
+                    <aside class="col-md-3 mb-4">
+                        <nav class="sidebar">
+                            <h4 class="mb-3">Admin Panel</h4>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#dashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#user-management">User Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#content-management">Content Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#system-settings">System Settings</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Content Area -->
+                    <div class="col-md-9">
+                        <!-- Dashboard Section -->
+                        <section id="dashboard" class="mb-5">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2>Dashboard</h2>
+                                <button id="refreshStatsBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+
+                            <!-- Stats Cards -->
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="card stats-card bg-primary text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="card-title">Total Users</h6>
+                                                    <h2 id="totalUsersCount" class="card-text">--</h2>
+                                                </div>
+                                                <i class="fas fa-users fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card stats-card bg-success text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="card-title">Total Recipes</h6>
+                                                    <h2 id="totalRecipesCount" class="card-text">--</h2>
+                                                </div>
+                                                <i class="fas fa-utensils fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card stats-card bg-info text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="card-title">Active Sessions (30m)</h6>
+                                                    <h2 id="activeSessionsCount" class="card-text">--</h2>
+                                                </div>
+                                                <i class="fas fa-clock fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Activity -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Recent User Activity</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>Action</th>
+                                                    <th>Date/Time</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recentActivityTable">
+                                                <tr><td colspan="3" class="text-center">Loading activity data...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- User Management Section -->
+                        <section id="user-management" class="mb-5 d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2>User Management</h2>
+                                <div>
+                                    <button id="refreshUsersBtn" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- User Search -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Search Users</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="userSearchInput" class="form-control" placeholder="Search by username or email">
+                                        <button class="btn btn-outline-primary" type="button" id="userSearchBtn">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User List -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">User List</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>Email</th>
+                                                    <th>Registration Date</th>
+                                                    <th>Last Login</th>
+                                                    <th>Admin</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="userTableBody">
+                                                <tr><td colspan="7" class="text-center">Loading user data...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Content Management Section -->
+                        <section id="content-management" class="mb-5 d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2>Content Management</h2>
+                                <button id="addNewRecipeBtn" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Add New Recipe
+                                </button>
+                            </div>
+
+                            <!-- Recipe Management -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Recipe Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="recipeSearchInput" class="form-control" placeholder="Search recipes...">
+                                        <button class="btn btn-outline-primary" type="button" id="recipeSearchBtn">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Rating</th>
+                                                    <th>Created Date</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recipeTableBody">
+                                                <tr><td colspan="4" class="text-center">Loading recipe data...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ingredient Management -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Ingredient Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-8">
+                                            <input type="text" id="newIngredientInput" class="form-control" placeholder="New ingredient name">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button id="addIngredientBtn" class="btn btn-primary w-100">
+                                                <i class="fas fa-plus"></i> Add Ingredient
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ingredientTableBody">
+                                                <tr><td colspan="3" class="text-center">Loading ingredient data...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- System Settings Section -->
+                        <section id="system-settings" class="mb-5 d-none">
+                            <h2 class="mb-4">System Settings</h2>
+
+                            <!-- Database Management -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Database Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-warning">
+                                        <strong>Warning!</strong> These operations can affect system performance and data integrity.
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <button id="backupDbBtn" class="btn btn-info w-100">
+                                                <i class="fas fa-database"></i> Backup Database
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <button id="optimizeDbBtn" class="btn btn-warning w-100">
+                                                <i class="fas fa-bolt"></i> Optimize Database
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Logs Viewer -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">System Logs</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="logLevelSelect" class="form-label">Log Level</label>
+                                        <select class="form-select" id="logLevelSelect">
+                                            <option value="all">All</option>
+                                            <option value="info">Info</option>
+                                            <option value="warn">Warning</option>
+                                            <option value="error">Error</option>
+                                        </select>
+                                    </div>
+                                    <div class="logs-container p-3 bg-dark text-light rounded" style="height: 300px; overflow-y: auto;">
+                                        <pre id="logContent" class="mb-0">Loading logs...</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 Pantry Pilot. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript for admin functionality -->
+    <script>
+        // Helper function to get a cookie's value by name
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(";");
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === " ") c = c.substring(1);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // Navigation for the sidebar tabs
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove active class from all links
+                document.querySelectorAll('.sidebar .nav-link').forEach(innerLink => {
+                    innerLink.classList.remove('active');
+                });
+
+                // Add active class to clicked link
+                this.classList.add('active');
+
+                // Hide all sections
+                document.querySelectorAll('section[id]').forEach(section => {
+                    section.classList.add('d-none');
+                });
+
+                // Show the target section
+                const targetId = this.getAttribute('href').substring(1);
+                document.getElementById(targetId).classList.remove('d-none');
+            });
+        });
+
+        // User Management section - toggle user admin status
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('toggle-admin-btn')) {
+                const userId = e.target.getAttribute('data-user-id');
+                const isAdmin = e.target.getAttribute('data-is-admin') === 'true';
+
+                toggleAdminStatus(userId, !isAdmin);
+            }
+        });
+
+        // Function to toggle admin status
+        async function toggleAdminStatus(userId, makeAdmin) {
+            try {
+                const response = await fetch('/api/updateAdminStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        isAdmin: makeAdmin
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update admin status');
+                }
+
+                // Refresh user table after successful update
+                refreshUsers();
+            } catch (error) {
+                console.error('Error updating admin status:', error);
+                alert('Failed to update admin status. Please try again.');
+            }
+        }
+
+        // Function to fetch and display users
+        async function refreshUsers() {
+            try {
+                const response = await fetch('/api/getUsers');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const users = await response.json();
+                const userTableBody = document.getElementById('userTableBody');
+
+                userTableBody.innerHTML = '';
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                        <td>
+                            <button class="btn btn-sm ${user.isAdmin ? 'btn-success' : 'btn-secondary'} toggle-admin-btn"
+                                    data-user-id="${user.userID}"
+                                    data-is-admin="${user.isAdmin}">
+                                ${user.isAdmin ? 'Yes' : 'No'}
+                            </button>
+                        </td>
+                        <td>
+                            <span class="badge ${user.isActive ? 'bg-success' : 'bg-danger'}">
+                                ${user.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                        </td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                document.getElementById('userTableBody').innerHTML =
+                    '<tr><td colspan="7" class="text-center text-danger">Failed to load user data</td></tr>';
+            }
+        }
+
+        // Show dashboard by default and hide other sections
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up user login status
+            const username = getCookie("username");
+            if (username) {
+                // Replace the login button with a dropdown showing the username
+                const loginBtn = document.getElementById("loginBtn");
+                if (loginBtn) {
+                    const dropdownDiv = document.createElement("div");
+                    dropdownDiv.className = "dropdown ms-3";
+                    dropdownDiv.innerHTML =
+                        '<button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">' +
+                        username +
+                        '</button>' +
+                        '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">' +
+                        '<li><a class="dropdown-item" href="/settings">Settings</a></li>' +
+                        '<li><a class="dropdown-item" href="/logout">Sign Out</a></li>' +
+                        "</ul>";
+                    loginBtn.parentNode.replaceChild(dropdownDiv, loginBtn);
+                }
+            }
+
+            // Show only dashboard section by default
+            document.querySelectorAll('section[id]').forEach(section => {
+                if (section.id !== 'dashboard') {
+                    section.classList.add('d-none');
+                }
+            });
+
+            // Add click event for refresh buttons
+            document.getElementById('refreshUsersBtn').addEventListener('click', refreshUsers);
+
+            // Mock data for dashboard
+
+            $.get("/api/admin/getTotalUsers", function(data) {
+                document.getElementById('totalUsersCount').textContent = data;
+            });
+
+            $.get("/api/admin/getTotalRecipes", function(data) {
+                document.getElementById('totalRecipesCount').textContent = data;
+            });
+
+            $.get("/api/admin/getActiveSessions", function(data) {
+                document.getElementById('activeSessionsCount').textContent = data;
+            });
+        });
+    </script>
+</body>
+</html>

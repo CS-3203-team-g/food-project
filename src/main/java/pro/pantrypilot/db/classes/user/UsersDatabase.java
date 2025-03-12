@@ -155,6 +155,20 @@ public class UsersDatabase {
         }
     }
 
+    public static int getTotalUsers(){
+        String countUsersSQL = "SELECT COUNT(*) FROM users";
+        try (ResultSet resultSet = DatabaseConnectionManager.getConnection().createStatement().executeQuery(countUsersSQL)) {
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            } else {
+                return 0;
+            }
+        } catch (SQLException e) {
+            logger.error("Error counting users", e);
+            return 0;
+        }
+    }
+
     public static void updateUserLastLogin(User user) {
         updateUserLastLogin(user.getUserID());
     }
