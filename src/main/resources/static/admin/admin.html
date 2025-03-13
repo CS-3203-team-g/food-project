@@ -258,73 +258,18 @@
 
                         <!-- Content Management Section -->
                         <section id="content-management" class="mb-5 d-none">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h2>Content Management</h2>
-                                <button id="addNewRecipeBtn" class="btn btn-success">
-                                    <i class="fas fa-plus"></i> Add New Recipe
-                                </button>
-                            </div>
-
-                            <!-- Recipe Management -->
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Recipe Management</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="input-group mb-3">
-                                        <input type="text" id="recipeSearchInput" class="form-control" placeholder="Search recipes...">
-                                        <button class="btn btn-outline-primary" type="button" id="recipeSearchBtn">
-                                            <i class="fas fa-search"></i> Search
-                                        </button>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Rating</th>
-                                                    <th>Created Date</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="recipeTableBody">
-                                                <tr><td colspan="4" class="text-center">Loading recipe data...</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Ingredient Management -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Ingredient Management</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row mb-3">
-                                        <div class="col-md-8">
-                                            <input type="text" id="newIngredientInput" class="form-control" placeholder="New ingredient name">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button id="addIngredientBtn" class="btn btn-primary w-100">
-                                                <i class="fas fa-plus"></i> Add Ingredient
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Name</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="ingredientTableBody">
-                                                <tr><td colspan="3" class="text-center">Loading ingredient data...</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <button id="downloadRecipeButton" class="btn btn-success">
+                                        <i class="fa-solid fa-cloud-arrow-down"></i> Download Recipe Databases
+                                    </button>
+                                    <button id="uploadRecipeButton" class="btn btn-primary">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Recipe Databases
+                                    </button>
+                                    <input type="file" id="fileInput" accept=".json" style="display: none;">
                                 </div>
                             </div>
                         </section>
@@ -546,7 +491,7 @@
             // Add click event for refresh buttons
             document.getElementById('refreshUsersBtn').addEventListener('click', refreshUsers);
 
-            // Mock data for dashboard
+            // Fetch and display user data
 
             $.get("/api/admin/getTotalUsers", function(data) {
                 document.getElementById('totalUsersCount').textContent = data;
@@ -560,6 +505,61 @@
                 document.getElementById('activeSessionsCount').textContent = data;
             });
         });
+
+        $(document).ready(function () {
+            $("#downloadRecipeButton").click(function (e) {
+                e.preventDefault();
+
+                // Create an invisible link element
+                const link = document.createElement("a");
+                link.href = "/api/admin/getRecipeDatabasesJSON";  // URL to the JSON file
+                link.setAttribute("download", "recipes.json"); // Set the filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link); // Clean up
+            });
+            $("#uploadRecipeButton").click(function () {
+                $("#fileInput").click(); // Trigger file input
+            });
+
+            $("#fileInput").change(function () {
+                let file = this.files[0];
+
+                if (!file) {
+                    alert("No file selected!");
+                    return;
+                }
+
+                let reader = new FileReader();
+                reader.onload = function (event) {
+                    let jsonData = event.target.result;
+
+                    try {
+                        let parsedData = JSON.parse(jsonData); // Ensure it's valid JSON
+
+                        $.ajax({
+                            url: "/api/admin/loadRecipeDatabasesJSON",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify(parsedData),
+                            dataType: "text", // Prevent automatic JSON parsing
+                            success: function (response) {
+                                alert("File uploaded successfully!");
+                                console.log(response);
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error uploading file: " + error);
+                            }
+                        });
+                    } catch (e) {
+                        alert("Invalid JSON file!");
+                    }
+                };
+
+                reader.readAsText(file);
+            });
+        });
+
     </script>
 </body>
 </html>

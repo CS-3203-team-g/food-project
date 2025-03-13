@@ -63,6 +63,8 @@ public class Main {
         server.createContext("/api/admin/getTotalUsers", new pro.pantrypilot.endpoints.api.admin.GetTotalUsers());
         server.createContext("/api/admin/getTotalRecipes", new pro.pantrypilot.endpoints.api.admin.GetTotalRecipes());
         server.createContext("/api/admin/getActiveSessions", new pro.pantrypilot.endpoints.api.admin.GetActiveSessions());
+        server.createContext("/api/admin/getRecipeDatabases", new pro.pantrypilot.endpoints.api.admin.GetRecipeDatabasesJSON());
+        server.createContext("/api/admin/loadRecipeDatabases", new pro.pantrypilot.endpoints.api.admin.LoadRecipeDatabasesJSON());
 
 
         logger.info("Starting HttpServer");
