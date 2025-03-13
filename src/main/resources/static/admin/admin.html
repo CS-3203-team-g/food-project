@@ -109,13 +109,7 @@
                                     <a class="nav-link active" href="#dashboard">Dashboard</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#user-management">User Management</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" href="#content-management">Content Management</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#system-settings">System Settings</a>
                                 </li>
                             </ul>
                         </nav>
@@ -199,60 +193,6 @@
                             </div>
                         </section>
 
-                        <!-- User Management Section -->
-                        <section id="user-management" class="mb-5 d-none">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h2>User Management</h2>
-                                <div>
-                                    <button id="refreshUsersBtn" class="btn btn-sm btn-outline-primary me-2">
-                                        <i class="fas fa-sync-alt"></i> Refresh
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- User Search -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Search Users</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="input-group mb-3">
-                                        <input type="text" id="userSearchInput" class="form-control" placeholder="Search by username or email">
-                                        <button class="btn btn-outline-primary" type="button" id="userSearchBtn">
-                                            <i class="fas fa-search"></i> Search
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- User List -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">User List</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Username</th>
-                                                    <th>Email</th>
-                                                    <th>Registration Date</th>
-                                                    <th>Last Login</th>
-                                                    <th>Admin</th>
-                                                    <th>Status</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="userTableBody">
-                                                <tr><td colspan="7" class="text-center">Loading user data...</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
                         <!-- Content Management Section -->
                         <section id="content-management" class="mb-5 d-none">
                             <div class="card mb-4">
@@ -267,56 +207,6 @@
                                         <i class="fa-solid fa-cloud-arrow-up"></i> Upload Recipe Databases
                                     </button>
                                     <input type="file" id="fileInput" accept=".json" style="display: none;">
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- System Settings Section -->
-                        <section id="system-settings" class="mb-5 d-none">
-                            <h2 class="mb-4">System Settings</h2>
-
-                            <!-- Database Management -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Database Management</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="alert alert-warning">
-                                        <strong>Warning!</strong> These operations can affect system performance and data integrity.
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <button id="backupDbBtn" class="btn btn-info w-100">
-                                                <i class="fas fa-database"></i> Backup Database
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <button id="optimizeDbBtn" class="btn btn-warning w-100">
-                                                <i class="fas fa-bolt"></i> Optimize Database
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Logs Viewer -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">System Logs</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="logLevelSelect" class="form-label">Log Level</label>
-                                        <select class="form-select" id="logLevelSelect">
-                                            <option value="all">All</option>
-                                            <option value="info">Info</option>
-                                            <option value="warn">Warning</option>
-                                            <option value="error">Error</option>
-                                        </select>
-                                    </div>
-                                    <div class="logs-container p-3 bg-dark text-light rounded" style="height: 300px; overflow-y: auto;">
-                                        <pre id="logContent" class="mb-0">Loading logs...</pre>
-                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -374,88 +264,6 @@
             });
         });
 
-        // User Management section - toggle user admin status
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('toggle-admin-btn')) {
-                const userId = e.target.getAttribute('data-user-id');
-                const isAdmin = e.target.getAttribute('data-is-admin') === 'true';
-
-                toggleAdminStatus(userId, !isAdmin);
-            }
-        });
-
-        // Function to toggle admin status
-        async function toggleAdminStatus(userId, makeAdmin) {
-            try {
-                const response = await fetch('/api/updateAdminStatus', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: userId,
-                        isAdmin: makeAdmin
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to update admin status');
-                }
-
-                // Refresh user table after successful update
-                refreshUsers();
-            } catch (error) {
-                console.error('Error updating admin status:', error);
-                alert('Failed to update admin status. Please try again.');
-            }
-        }
-
-        // Function to fetch and display users
-        async function refreshUsers() {
-            try {
-                const response = await fetch('/api/getUsers');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
-                }
-
-                const users = await response.json();
-                const userTableBody = document.getElementById('userTableBody');
-
-                userTableBody.innerHTML = '';
-
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.username}</td>
-                        <td>${user.email}</td>
-                        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
-                        <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
-                        <td>
-                            <button class="btn btn-sm ${user.isAdmin ? 'btn-success' : 'btn-secondary'} toggle-admin-btn"
-                                    data-user-id="${user.userID}"
-                                    data-is-admin="${user.isAdmin}">
-                                ${user.isAdmin ? 'Yes' : 'No'}
-                            </button>
-                        </td>
-                        <td>
-                            <span class="badge ${user.isActive ? 'bg-success' : 'bg-danger'}">
-                                ${user.isActive ? 'Active' : 'Inactive'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-danger">Delete</button>
-                        </td>
-                    `;
-                    userTableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                document.getElementById('userTableBody').innerHTML =
-                    '<tr><td colspan="7" class="text-center text-danger">Failed to load user data</td></tr>';
-            }
-        }
-
         // Show dashboard by default and hide other sections
         document.addEventListener('DOMContentLoaded', function() {
             // Set up user login status
@@ -484,9 +292,6 @@
                     section.classList.add('d-none');
                 }
             });
-
-            // Add click event for refresh buttons
-            document.getElementById('refreshUsersBtn').addEventListener('click', refreshUsers);
 
             // Fetch and display user data
 
