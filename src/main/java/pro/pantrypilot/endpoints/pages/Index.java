@@ -4,6 +4,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.pantrypilot.db.classes.session.Session;
+import pro.pantrypilot.db.classes.session.SessionsDatabase;
 import pro.pantrypilot.endpoints.api.signup.CreateUser;
 import pro.pantrypilot.helpers.FileHelper;
 
@@ -21,11 +23,38 @@ public class Index implements HttpHandler {
 
         logger.debug("Handling updated request for index.html");
 
+        // Extract sessionID from cookies
+        String sessionID = null;
+        String cookieHeader = exchange.getRequestHeaders().getFirst("Cookie");
+
+        if (cookieHeader != null) {
+            String[] cookies = cookieHeader.split(";");
+            for (String cookie : cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith("sessionID=")) {
+                    sessionID = cookie.substring("sessionID=".length());
+                    break;
+                }
+            }
+        }
+
+        boolean isAdmin = false;
+
+        Session session = SessionsDatabase.getSession(sessionID);
+        if (session != null && session.isValid() && session.getUser() != null && session.getUser().isAdmin()) {
+            isAdmin = true;
+
+        }
+
         byte[] responseBytes;
         try {
             // Read the file as bytes and then convert to String with UTF-8 encoding
             byte[] fileBytes = FileHelper.readFile("static/index.html");
             String response = new String(fileBytes, StandardCharsets.UTF_8);
+            // add admin to dropdown if the user is an admin
+            if(isAdmin){
+                response = response.replace("//ADMIN_DROPDOWN_REPLACE", "'<li><a class=\"dropdown-item\" href=\"/admin\">Admin</a></li>' +");
+            }
             responseBytes = response.getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {
             logger.error("Error reading index.html", e);
